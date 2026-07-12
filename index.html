@@ -179,20 +179,26 @@ main{max-width:1280px; margin:0 auto; padding:0 20px 80px; position:relative; z-
 .pay-opt{flex:1; background:var(--bg-elev-2); border:1px solid var(--line); color:var(--muted); padding:12px 8px; border-radius:var(--radius); font-family:inherit; font-weight:700; font-size:13px; cursor:pointer; transition:all .15s;}
 .pay-opt.active{border-color:var(--accent); color:var(--text); background:var(--accent-soft);}
 .pay-fields{display:flex; flex-direction:column; gap:12px; padding:14px; background:var(--bg-elev-2); border:1px solid var(--line); border-radius:var(--radius);}
-.apple-pay-btn{background:#000; color:#fff; border:1px solid #333; padding:12px; border-radius:6px; font-family:-apple-system,sans-serif; font-weight:600; font-size:16px; cursor:pointer; width:100%;}
-.apple-pay-btn.confirmed{background:var(--good); color:#fff;}
+.cod-option{display:flex; align-items:center; gap:12px; border-color:rgba(47,174,98,.55); background:linear-gradient(135deg, rgba(47,174,98,.12), var(--bg-elev-2));}
+.cod-icon{width:42px; height:42px; border-radius:50%; background:var(--good); color:#fff; display:grid; place-items:center; font-size:20px; flex:0 0 auto;}
+.cod-option b{display:block; color:var(--text); margin-bottom:3px;}
+.cod-option span{font-size:11px; color:var(--muted);}
 .payment-note{font-size:11px; color:var(--muted); line-height:1.6; background:var(--bg-elev-2); border:1px solid var(--line); padding:10px 12px; border-radius:var(--radius);}
 
 
 footer{border-top:1px solid var(--line); padding:26px 20px; text-align:center; color:var(--muted); font-size:12px; position:relative; z-index:1;}
 footer b{color:var(--text);}
+footer a{color:var(--good); text-decoration:none; font-weight:700;}
+.whatsapp-float{position:fixed; left:18px; bottom:18px; z-index:120; display:flex; align-items:center; gap:9px; background:#25D366; color:#071c0e; padding:11px 15px; border-radius:999px; text-decoration:none; font-weight:900; font-size:13px; box-shadow:0 12px 30px -8px rgba(37,211,102,.55); transition:transform .2s, filter .2s;}
+.whatsapp-float:hover{transform:translateY(-3px); filter:brightness(1.06);}
+.whatsapp-float:focus-visible{outline:3px solid #fff; outline-offset:3px;}
 
 /* toast notifications */
 .toast-host{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:300; display:flex; flex-direction:column; gap:8px; pointer-events:none;}
 .toast{background:var(--bg-elev); border:1px solid var(--accent); color:var(--text); padding:10px 18px; border-radius:4px; font-size:13px; font-weight:700; box-shadow:0 12px 30px -8px rgba(0,0,0,.6); animation:toastIn .3s cubic-bezier(.2,.8,.2,1) both;}
 
 /* ripple */
-.add-btn, .cart-btn, .checkout-btn, .pill, .apple-pay-btn, .pay-opt{position:relative; overflow:hidden;}
+.add-btn, .cart-btn, .checkout-btn, .pill, .pay-opt{position:relative; overflow:hidden;}
 .ripple{position:absolute; border-radius:50%; background:rgba(255,255,255,.35); transform:scale(0); animation:ripple-anim .6s ease-out; pointer-events:none;}
 
 @media(max-width:600px){
@@ -471,8 +477,10 @@ footer b{color:var(--text);}
 </main>
 
 <footer>
-  <b>بريك زون — BRAKE ZONE</b> · جميع الأسعار بالريال العماني وتشمل هامش الخدمة · رسوم توصيل ثابتة 2.000 ر.ع لكل طلب · التوصيل داخل سلطنة عُمان فقط
+  <b>بريك زون — BRAKE ZONE</b> · واتساب <a href="https://wa.me/96877277237" target="_blank" rel="noopener" dir="ltr">+968 7727 7237</a> · الدفع عند الاستلام · رسوم توصيل ثابتة 2.000 ر.ع · التوصيل داخل سلطنة عُمان فقط
 </footer>
+
+<a class="whatsapp-float" href="https://wa.me/96877277237" target="_blank" rel="noopener" aria-label="تواصل مع بريك زون عبر واتساب"><span>واتساب</span><span dir="ltr">+968 7727 7237</span></a>
 
 <div class="overlay" id="overlay" onclick="closeCart()"></div>
 <aside class="drawer" id="drawer">
@@ -518,39 +526,14 @@ footer b{color:var(--text);}
       <div class="field">
         <label>طريقة الدفع</label>
         <div class="pay-options">
-          <button type="button" class="pay-opt active" id="payCardBtn" onclick="selectPayment('card')">💳 بطاقة بنكية</button>
-          <button type="button" class="pay-opt" id="payAppleBtn" onclick="selectPayment('applepay')">🍎 Apple Pay</button>
-        </div>
-      </div>
-
-      <div id="cardFields" class="pay-fields">
-        <div class="field">
-          <label>الاسم على البطاقة</label>
-          <input type="text" id="cardName" placeholder="الاسم كما يظهر على البطاقة">
-        </div>
-        <div class="field">
-          <label>رقم البطاقة</label>
-          <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
-        </div>
-        <div style="display:flex; gap:10px;">
-          <div class="field" style="flex:1;">
-            <label>تاريخ الانتهاء</label>
-            <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
-          </div>
-          <div class="field" style="flex:1;">
-            <label>CVV</label>
-            <input type="text" id="cardCvv" placeholder="•••" maxlength="4">
+          <div class="pay-opt active cod-option">
+            <div class="cod-icon">✓</div>
+            <div><b>الدفع عند الاستلام</b><span>بدون رسوم بوابة دفع أو إدخال بيانات بطاقة</span></div>
           </div>
         </div>
-        <div class="field-error" id="errCard">يرجى إدخال بيانات بطاقة صحيحة</div>
       </div>
 
-      <div id="applePayFields" class="pay-fields" style="display:none;">
-        <button type="button" class="apple-pay-btn" onclick="markApplePayReady()"> Pay</button>
-        <div class="field-error" id="errApple">يرجى الضغط على زر Apple Pay لتأكيد الدفع</div>
-      </div>
-
-      <div class="payment-note">🔒 بياناتك لا تُخزَّن أو تُرسل عبر هذا الموقع. سيتواصل معك فريقنا برابط دفع آمن ومرخّص لإتمام العملية فعلياً عبر بطاقتك أو Apple Pay، وهذا الطلب هو تأكيد أولي لسلة مشترياتك.</div>
+      <div class="payment-note">🛡️ ادفع قيمة الطلب عند استلامه. لا يطلب الموقع رقم البطاقة أو رمز CVV، ويُرسل الطلب مباشرة إلى واتساب المتجر للتأكيد.</div>
     </div>
     <div class="modal-foot">
       <button class="checkout-btn" onclick="submitCheckout()">تأكيد الطلب وإرسال التفاصيل عبر واتساب</button>
@@ -796,39 +779,6 @@ function closeCheckoutModal(){
   document.getElementById('checkoutModal').classList.remove('open');
 }
 
-// ---------- payment method ----------
-let paymentMethod = 'card';
-let applePayConfirmed = false;
-
-function selectPayment(method){
-  paymentMethod = method;
-  document.getElementById('payCardBtn').classList.toggle('active', method==='card');
-  document.getElementById('payAppleBtn').classList.toggle('active', method==='applepay');
-  document.getElementById('cardFields').style.display = method==='card' ? 'flex' : 'none';
-  document.getElementById('applePayFields').style.display = method==='applepay' ? 'flex' : 'none';
-}
-
-function markApplePayReady(){
-  applePayConfirmed = true;
-  const btn = document.getElementById('applePayFields').querySelector('.apple-pay-btn');
-  btn.textContent = '✓ جاهز للدفع عبر Apple Pay';
-  btn.classList.add('confirmed');
-  document.getElementById('errApple').classList.remove('show');
-}
-
-document.getElementById('cardNumber').addEventListener('input', function(e){
-  let v = e.target.value.replace(/\D/g,'').slice(0,16);
-  e.target.value = v.replace(/(.{4})/g,'$1 ').trim();
-});
-document.getElementById('cardExpiry').addEventListener('input', function(e){
-  let v = e.target.value.replace(/\D/g,'').slice(0,4);
-  if(v.length>=3) v = v.slice(0,2)+'/'+v.slice(2);
-  e.target.value = v;
-});
-document.getElementById('cardCvv').addEventListener('input', function(e){
-  e.target.value = e.target.value.replace(/\D/g,'').slice(0,4);
-});
-
 function submitCheckout(){
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
@@ -843,29 +793,6 @@ function submitCheckout(){
 
   if(!name){ nameErr.classList.add('show'); valid = false; }
   if(!/^[79]\d{7}$/.test(phone)){ phoneErr.classList.add('show'); valid = false; }
-
-  let paymentSummary = '';
-  if(paymentMethod === 'card'){
-    const cardName = document.getElementById('cardName').value.trim();
-    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g,'');
-    const cardExpiry = document.getElementById('cardExpiry').value.trim();
-    const cardCvv = document.getElementById('cardCvv').value.trim();
-    const cardErr = document.getElementById('errCard');
-    cardErr.classList.remove('show');
-    if(!cardName || cardNumber.length<12 || !/^\d{2}\/\d{2}$/.test(cardExpiry) || cardCvv.length<3){
-      cardErr.classList.add('show'); valid = false;
-    } else {
-      paymentSummary = `بطاقة بنكية (تنتهي بـ ${cardNumber.slice(-4)})`;
-    }
-  } else {
-    const appleErr = document.getElementById('errApple');
-    appleErr.classList.remove('show');
-    if(!applePayConfirmed){
-      appleErr.classList.add('show'); valid = false;
-    } else {
-      paymentSummary = 'Apple Pay';
-    }
-  }
 
   if(!valid) return;
 
@@ -882,9 +809,9 @@ function submitCheckout(){
   const total = subtotal + DELIVERY_FEE;
   msg += `%0Aالتوصيل: ${fmt(DELIVERY_FEE)} ر.ع%0Aالإجمالي: ${fmt(total)} ر.ع`;
   msg += `%0A%0A--- بيانات التوصيل ---%0Aالاسم: ${encodeURIComponent(name)}%0Aالهاتف: +968 ${phone}%0Aالمحافظة: ${encodeURIComponent(gov)}%0Aالولاية: ${encodeURIComponent(wil)}`;
-  msg += `%0A%0Aطريقة الدفع المطلوبة: ${encodeURIComponent(paymentSummary)}%0A(بانتظار رابط دفع آمن من المتجر لإتمام العملية فعلياً)`;
+  msg += `%0A%0Aطريقة الدفع: ${encodeURIComponent('الدفع عند الاستلام')}`;
 
-  window.open(`https://wa.me/?text=${msg}`, '_blank');
+  window.open(`https://wa.me/96877277237?text=${msg}`, '_blank', 'noopener');
   closeCheckoutModal();
 }
 
@@ -910,7 +837,7 @@ function showToast(text){
 
 // ---------- ripple effect on interactive buttons ----------
 document.addEventListener('click', (e)=>{
-  const btn = e.target.closest('.add-btn, .cart-btn, .checkout-btn, .pill, .apple-pay-btn, .pay-opt');
+  const btn = e.target.closest('.add-btn, .cart-btn, .checkout-btn, .pill');
   if(!btn) return;
   const rect = btn.getBoundingClientRect();
   const ripple = document.createElement('span');
