@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بريك زون | قطع غيار فرامل أصلية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0A0A;
+  --bg-elev:#161616;
+  --bg-elev-2:#1F1F1F;
+  --line:#2c2c2c;
+  --accent:#E2001A;
+  --accent-soft:#3a0a0d;
+  --steel:#8a8a8a;
+  --text:#F5F5F5;
+  --muted:#9a9a9a;
+  --good:#2fae62;
+  --warn:#e0b13a;
+  --radius:2px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg); color:var(--text); font-family:'Tajawal', sans-serif; line-height:1.5; min-height:100vh; overflow-x:hidden;}
+.mono{font-family:'JetBrains Mono', monospace;}
+
+@keyframes fadeInUp{from{opacity:0; transform:translateY(24px);} to{opacity:1; transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+@keyframes shimmer{0%{background-position:-400px 0;} 100%{background-position:400px 0;}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 rgba(226,0,26,.35);} 50%{box-shadow:0 0 24px 4px rgba(226,0,26,.25);}}
+@keyframes sweep{0%{transform:translateX(-120%) skewX(-15deg);} 100%{transform:translateX(220%) skewX(-15deg);}}
+@keyframes orbit{from{transform:rotate(0deg) translateX(150px) rotate(0deg);} to{transform:rotate(360deg) translateX(150px) rotate(-360deg);}}
+@keyframes ripple-anim{to{transform:scale(3); opacity:0;}}
+@keyframes toastIn{from{opacity:0; transform:translateY(-16px) scale(.95);} to{opacity:1; transform:translateY(0) scale(1);}}
+@keyframes toastOut{to{opacity:0; transform:translateY(-10px) scale(.97);}}
+@keyframes revIntro{0%{opacity:0; transform:scale(.85) rotate(-8deg);} 60%{opacity:1;} 100%{opacity:1; transform:scale(1) rotate(0);}}
+@keyframes underlineGrow{from{width:0;} to{width:100%;}}
+
+.reveal{opacity:0; animation:fadeInUp .6s ease forwards;}
+
+::selection{background:var(--accent); color:#fff;}
+
+/* scrollbar polish */
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--line); border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+.disc-pattern{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.05;
+  background-image:
+    radial-gradient(circle at 15% 20%, transparent 0 60px, var(--line) 61px 63px, transparent 64px),
+    radial-gradient(circle at 85% 75%, transparent 0 90px, var(--line) 91px 93px, transparent 94px);}
+
+header{position:sticky; top:0; z-index:50; background:rgba(10,10,10,.85); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); transition:box-shadow .3s, border-color .3s, background .3s;}
+header.scrolled{box-shadow:0 10px 30px -10px rgba(0,0,0,.6); border-color:rgba(226,0,26,.25); background:rgba(8,8,8,.94);}
+.header-inner{max-width:1280px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;}
+.logo{display:flex; align-items:center; gap:10px; font-weight:900; font-size:20px; letter-spacing:.5px; white-space:nowrap;}
+.logo .disc-icon{width:34px; height:34px; border-radius:50%; border:3px solid var(--accent); position:relative; flex:0 0 auto; animation:spin 12s linear infinite, glowPulse 3s ease-in-out infinite;}
+.logo .disc-icon::before{content:""; position:absolute; inset:8px; border-radius:50%; border:2px solid var(--steel);}
+.logo .disc-icon::after{content:""; position:absolute; top:2px; left:50%; width:2px; height:5px; background:var(--accent); transform:translateX(-50%);}
+.logo small{display:block; font-weight:400; font-size:10px; color:var(--muted); letter-spacing:2px;}
+
+.search-wrap{flex:1 1 260px; position:relative; min-width:180px;}
+#searchInput{width:100%; background:var(--bg-elev); border:1px solid var(--line); color:var(--text); padding:10px 14px; border-radius:var(--radius); font-family:inherit; font-size:14px; transition:border-color .2s, box-shadow .2s;}
+#searchInput:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(226,0,26,.15);}
+#searchInput::placeholder{color:var(--muted);}
+
+.cart-btn{position:relative; overflow:hidden; display:flex; align-items:center; gap:8px; background:var(--accent); color:#fff; border:none; padding:10px 16px; border-radius:var(--radius); font-family:inherit; font-weight:700; font-size:14px; cursor:pointer; white-space:nowrap; transition:filter .15s, transform .15s;}
+.cart-btn:hover{filter:brightness(1.15); transform:translateY(-1px);}
+.cart-btn:active{transform:translateY(0) scale(.97);}
+.cart-count{background:#fff; color:var(--accent); border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; transition:transform .2s;}
+.cart-count.bump{animation:bump .35s ease;}
+@keyframes bump{0%{transform:scale(1);} 40%{transform:scale(1.5);} 100%{transform:scale(1);}}
+
+.hero{max-width:1280px; margin:0 auto; padding:56px 20px 36px; position:relative; z-index:1; display:grid; grid-template-columns:1.3fr .7fr; gap:40px; align-items:center; overflow:hidden;}
+@media (max-width:820px){.hero{grid-template-columns:1fr;}}
+.hero-sweep{position:absolute; inset:-20% -10%; background:linear-gradient(100deg, transparent 40%, rgba(226,0,26,.06) 50%, transparent 60%); pointer-events:none; animation:sweep 7s ease-in-out infinite;}
+.eyebrow{font-family:'JetBrains Mono', monospace; color:var(--accent); font-size:12px; letter-spacing:3px; text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:8px; opacity:0; animation:fadeInUp .6s ease .1s forwards;}
+.eyebrow::before{content:""; width:22px; height:2px; background:var(--accent); display:inline-block; animation:underlineGrow .6s ease .3s both;}
+.hero h1{font-size:clamp(30px, 4.4vw, 52px); font-weight:900; line-height:1.15; margin-bottom:16px; overflow:hidden;}
+.hero h1 .line{display:block; opacity:0; animation:fadeInUp .7s cubic-bezier(.2,.8,.2,1) forwards;}
+.hero h1 .line:nth-child(1){animation-delay:.2s;}
+.hero h1 .line:nth-child(2){animation-delay:.35s;}
+.hero h1 span{color:var(--accent); text-shadow:0 0 24px rgba(226,0,26,.35);}
+.hero p{color:var(--muted); font-size:16px; max-width:520px; margin-bottom:22px; opacity:0; animation:fadeInUp .6s ease .5s forwards;}
+.hero-stats{display:flex; gap:28px; flex-wrap:wrap; opacity:0; animation:fadeInUp .6s ease .65s forwards;}
+.hero-stats div{border-right:2px solid var(--accent); padding-right:14px; transition:transform .2s;}
+.hero-stats div:hover{transform:translateY(-2px);}
+.hero-stats b{display:block; font-size:26px; font-weight:900; font-family:'JetBrains Mono', monospace;}
+.hero-stats span{color:var(--muted); font-size:12px;}
+.hero-visual{aspect-ratio:1; position:relative; display:flex; align-items:center; justify-content:center; opacity:0; animation:revIntro .9s cubic-bezier(.2,.8,.2,1) .3s forwards;}
+.rotor-svg{width:88%; aspect-ratio:1; filter:drop-shadow(0 20px 50px rgba(0,0,0,.6)) drop-shadow(0 0 40px rgba(226,0,26,.15));}
+.rotor-spin{transform-origin:150px 150px; animation:spin 14s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.caliper{transform-origin:150px 150px;}
+.caliper-badge{position:absolute; bottom:6%; left:6%; background:var(--accent); color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; padding:8px 14px; border-radius:3px; letter-spacing:1px; box-shadow:0 10px 30px -6px rgba(226,0,26,.6); animation:fadeInUp .6s ease 1s both, glowPulse 2.5s ease-in-out 1.5s infinite;}
+@media (prefers-reduced-motion: reduce){.rotor-spin,.logo .disc-icon,.hero-sweep{animation:none;}}
+
+.filters{max-width:1280px; margin:0 auto; padding:0 20px 20px; position:relative; z-index:1;}
+.filter-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
+.filter-label{font-size:11px; color:var(--muted); font-family:'JetBrains Mono',monospace; letter-spacing:1px; margin-inline-end:4px;}
+.pill{background:var(--bg-elev); border:1px solid var(--line); color:var(--muted); padding:8px 16px; border-radius:20px; font-size:13px; cursor:pointer; font-family:inherit; transition:all .2s cubic-bezier(.2,.8,.2,1); white-space:nowrap;}
+.pill:hover{border-color:var(--accent); color:var(--text); transform:translateY(-1px);}
+.pill.active{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700; box-shadow:0 6px 16px -6px rgba(226,0,26,.6);}
+.pill.small{padding:6px 13px; font-size:12px;}
+select{background:var(--bg-elev); border:1px solid var(--line); color:var(--text); padding:9px 12px; border-radius:var(--radius); font-family:inherit; font-size:13px; cursor:pointer;}
+.result-count{color:var(--muted); font-size:13px; font-family:'JetBrains Mono',monospace;}
+
+main{max-width:1280px; margin:0 auto; padding:0 20px 80px; position:relative; z-index:1;}
+.grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:14px;}
+.card{background:var(--bg-elev); border:1px solid var(--line); border-radius:var(--radius); padding:16px; display:flex; flex-direction:column; gap:8px; transition:border-color .25s, transform .25s, box-shadow .25s;}
+.card:hover{border-color:var(--accent); transform:translateY(-4px); box-shadow:0 16px 34px -14px rgba(226,0,26,.35);}
+.card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap;}
+.brand-tag{font-size:11px; letter-spacing:.5px; color:var(--accent); font-weight:700;}
+.tag-row{display:flex; gap:6px; flex-wrap:wrap;}
+.cat-tag{font-size:10px; color:var(--steel); font-family:'JetBrains Mono',monospace; border:1px solid var(--line); padding:2px 6px; border-radius:10px;}
+.pos-tag{font-size:10px; font-family:'JetBrains Mono',monospace; padding:2px 6px; border-radius:10px;}
+.pos-tag.front{color:var(--good); border:1px solid var(--good);}
+.pos-tag.rear{color:var(--warn); border:1px solid var(--warn);}
+.card h3{font-size:14px; font-weight:700; line-height:1.4;}
+.fits-line{font-size:12px; color:var(--muted);}
+.fits-line b{color:var(--text); font-weight:500;}
+.card .oe{color:var(--muted); font-size:11px; font-family:'JetBrains Mono',monospace;}
+.card .sku{color:var(--muted); font-size:11px; font-family:'JetBrains Mono',monospace;}
+.disclaimer{font-size:10.5px; color:var(--warn); background:rgba(224,177,58,.08); border:1px dashed rgba(224,177,58,.4); padding:6px 8px; border-radius:var(--radius); line-height:1.5;}
+.card-bottom{margin-top:auto; padding-top:10px; border-top:1px dashed var(--line); display:flex; align-items:center; justify-content:space-between; gap:8px;}
+.price{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px;}
+.price small{font-size:11px; color:var(--muted); font-weight:400;}
+.add-btn{background:transparent; border:1px solid var(--accent); color:var(--accent); padding:7px 14px; border-radius:var(--radius); font-family:inherit; font-weight:700; font-size:12px; cursor:pointer; transition:all .2s; white-space:nowrap;}
+.add-btn:hover{background:var(--accent); color:#fff; box-shadow:0 8px 18px -8px rgba(226,0,26,.7);}
+.add-btn:active{transform:scale(.95);}
+.add-btn.added{background:var(--good); border-color:var(--good); color:#fff;}
+.empty-state{text-align:center; padding:60px 20px; color:var(--muted); grid-column:1/-1;}
+
+.overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(2px); z-index:90; opacity:0; pointer-events:none; transition:opacity .3s;}
+.overlay.open{opacity:1; pointer-events:auto;}
+.drawer{position:fixed; top:0; bottom:0; left:0; width:min(400px, 92vw); background:var(--bg-elev); z-index:100; transform:translateX(-100%); transition:transform .35s cubic-bezier(.2,.8,.2,1); display:flex; flex-direction:column; border-left:1px solid var(--line); box-shadow:20px 0 60px rgba(0,0,0,.5);}
+.drawer.open{transform:translateX(0);}
+.drawer-head{padding:18px 20px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center;}
+.drawer-head h2{font-size:18px; font-weight:900;}
+.drawer-close{background:none; border:none; color:var(--muted); font-size:22px; cursor:pointer; line-height:1;}
+.drawer-body{flex:1; overflow-y:auto; padding:14px 20px;}
+.cart-item{display:flex; gap:10px; padding:12px 0; border-bottom:1px solid var(--line);}
+.cart-item-info{flex:1;}
+.cart-item-info h4{font-size:13px; font-weight:700; margin-bottom:4px;}
+.cart-item-info .oe{font-size:10px;}
+.qty-controls{display:flex; align-items:center; gap:8px; margin-top:8px;}
+.qty-controls button{width:22px; height:22px; border-radius:50%; border:1px solid var(--line); background:var(--bg-elev-2); color:var(--text); cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center;}
+.qty-controls span{font-family:'JetBrains Mono',monospace; font-size:13px; min-width:18px; text-align:center;}
+.remove-link{color:var(--muted); font-size:11px; text-decoration:underline; cursor:pointer; margin-inline-start:auto;}
+.line-price{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; white-space:nowrap;}
+.drawer-foot{border-top:1px solid var(--line); padding:16px 20px 20px;}
+.sum-row{display:flex; justify-content:space-between; font-size:13px; color:var(--muted); margin-bottom:6px;}
+.sum-row.total{color:var(--text); font-weight:900; font-size:17px; font-family:'JetBrains Mono',monospace; margin-top:8px; padding-top:10px; border-top:1px solid var(--line);}
+.checkout-btn{width:100%; background:var(--accent); color:#fff; border:none; padding:13px; border-radius:var(--radius); font-family:inherit; font-weight:900; font-size:15px; cursor:pointer; margin-top:14px;}
+.checkout-btn:disabled{background:var(--line); color:var(--muted); cursor:not-allowed;}
+.cart-empty{text-align:center; color:var(--muted); padding:50px 10px; font-size:14px;}
+
+/* checkout modal */
+.modal-overlay{position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(2px); z-index:200; display:none; align-items:center; justify-content:center; padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg-elev); border:1px solid var(--line); border-radius:4px; width:min(440px,100%); max-height:90vh; overflow-y:auto; animation:fadeInUp .3s cubic-bezier(.2,.8,.2,1) both;}
+.modal-head{padding:18px 20px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center;}
+.modal-head h2{font-size:17px; font-weight:900;}
+.modal-body{padding:20px; display:flex; flex-direction:column; gap:14px;}
+.field label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px;}
+.field input, .field select{width:100%; background:var(--bg-elev-2); border:1px solid var(--line); color:var(--text); padding:10px 12px; border-radius:var(--radius); font-family:inherit; font-size:14px;}
+.field input:focus, .field select:focus{outline:none; border-color:var(--accent);}
+.phone-field{display:flex; gap:8px;}
+.phone-code{flex:0 0 90px; background:var(--bg-elev-2); border:1px solid var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; border-radius:var(--radius); font-family:'JetBrains Mono',monospace; font-size:13px;}
+.phone-field input{flex:1;}
+.field-error{color:var(--accent); font-size:11px; margin-top:5px; display:none;}
+.field-error.show{display:block;}
+.modal-foot{padding:14px 20px 20px;}
+.oman-note{font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px;}
+.pay-options{display:flex; gap:10px;}
+.pay-opt{flex:1; background:var(--bg-elev-2); border:1px solid var(--line); color:var(--muted); padding:12px 8px; border-radius:var(--radius); font-family:inherit; font-weight:700; font-size:13px; cursor:pointer; transition:all .15s;}
+.pay-opt.active{border-color:var(--accent); color:var(--text); background:var(--accent-soft);}
+.pay-fields{display:flex; flex-direction:column; gap:12px; padding:14px; background:var(--bg-elev-2); border:1px solid var(--line); border-radius:var(--radius);}
+.apple-pay-btn{background:#000; color:#fff; border:1px solid #333; padding:12px; border-radius:6px; font-family:-apple-system,sans-serif; font-weight:600; font-size:16px; cursor:pointer; width:100%;}
+.apple-pay-btn.confirmed{background:var(--good); color:#fff;}
+.payment-note{font-size:11px; color:var(--muted); line-height:1.6; background:var(--bg-elev-2); border:1px solid var(--line); padding:10px 12px; border-radius:var(--radius);}
+
+
+footer{border-top:1px solid var(--line); padding:26px 20px; text-align:center; color:var(--muted); font-size:12px; position:relative; z-index:1;}
+footer b{color:var(--text);}
+
+/* toast notifications */
+.toast-host{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:300; display:flex; flex-direction:column; gap:8px; pointer-events:none;}
+.toast{background:var(--bg-elev); border:1px solid var(--accent); color:var(--text); padding:10px 18px; border-radius:4px; font-size:13px; font-weight:700; box-shadow:0 12px 30px -8px rgba(0,0,0,.6); animation:toastIn .3s cubic-bezier(.2,.8,.2,1) both;}
+
+/* ripple */
+.add-btn, .cart-btn, .checkout-btn, .pill, .apple-pay-btn, .pay-opt{position:relative; overflow:hidden;}
+.ripple{position:absolute; border-radius:50%; background:rgba(255,255,255,.35); transform:scale(0); animation:ripple-anim .6s ease-out; pointer-events:none;}
+
+@media(max-width:600px){
+  .hero-stats div{padding-right:10px;}
+  .header-inner{padding:12px 14px;}
+}
+</style>
+</head>
+<body>
+<div class="disc-pattern"></div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="disc-icon"></div>
+      <div>بريك زون<small>BRAKE ZONE · BREMBO STOCK</small></div>
+    </div>
+    <div class="search-wrap">
+      <input id="searchInput" type="text" placeholder="ابحث بالموديل، رقم القطعة، أو الماركة...">
+    </div>
+    <button class="cart-btn" onclick="openCart()">🛒 السلة <span class="cart-count" id="cartCount">0</span></button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-sweep"></div>
+  <div>
+    <span class="eyebrow">مخزون فرامل بريمبو الأصلي</span>
+    <h1><span class="line">قطع فرامل أصلية</span><span class="line">لكل <span>سيارتك</span></span></h1>
+    <p>تشكيلة كاملة من أقمشة الفرامل، الأقراص، الحساسات، وزيت الفرامل لأشهر الماركات الأوروبية والأمريكية واليابانية — بأسعار واضحة وتوصيل لجميع محافظات سلطنة عُمان.</p>
+    <div class="hero-stats">
+      <div><b id="statCount" data-target="264">0</b><span>منتج متوفر</span></div>
+      <div><b id="statBrands" data-target="18">0</b><span>ماركة سيارات</span></div>
+      <div><b id="statDelivery" data-target="2">0.000</b><span>ر.ع رسوم التوصيل</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <svg class="rotor-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="discGrad" cx="46%" cy="42%" r="68%">
+      <stop offset="0%" stop-color="#4a4a4a"/>
+      <stop offset="45%" stop-color="#333333"/>
+      <stop offset="80%" stop-color="#232323"/>
+      <stop offset="100%" stop-color="#141414"/>
+    </radialGradient>
+    <radialGradient id="hubGrad" cx="42%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#4a3a2e"/>
+      <stop offset="55%" stop-color="#2a2019"/>
+      <stop offset="100%" stop-color="#0f0b08"/>
+    </radialGradient>
+    <linearGradient id="caliperGrad" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#ff2e40"/>
+      <stop offset="50%" stop-color="#d4001c"/>
+      <stop offset="100%" stop-color="#900012"/>
+    </linearGradient>
+    <radialGradient id="axleGrad" cx="45%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#dcdcdc"/>
+      <stop offset="60%" stop-color="#9a9a9a"/>
+      <stop offset="100%" stop-color="#5c5c5c"/>
+    </radialGradient>
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- rotating rotor group -->
+  <g class="rotor-spin">
+    <circle cx="150" cy="150" r="142" fill="url(#discGrad)" stroke="#050505" stroke-width="2"/>
+    <g opacity="0.18" stroke="#000" stroke-width="0.5">
+      <line x1="150" y1="150" x2="290.0" y2="150.0"/><line x1="150" y1="150" x2="288.3" y2="171.9"/><line x1="150" y1="150" x2="283.1" y2="193.3"/><line x1="150" y1="150" x2="274.7" y2="213.6"/><line x1="150" y1="150" x2="263.3" y2="232.3"/><line x1="150" y1="150" x2="249.0" y2="249.0"/><line x1="150" y1="150" x2="232.3" y2="263.3"/><line x1="150" y1="150" x2="213.6" y2="274.7"/><line x1="150" y1="150" x2="193.3" y2="283.1"/><line x1="150" y1="150" x2="171.9" y2="288.3"/><line x1="150" y1="150" x2="150.0" y2="290.0"/><line x1="150" y1="150" x2="128.1" y2="288.3"/><line x1="150" y1="150" x2="106.7" y2="283.1"/><line x1="150" y1="150" x2="86.4" y2="274.7"/><line x1="150" y1="150" x2="67.7" y2="263.3"/><line x1="150" y1="150" x2="51.0" y2="249.0"/><line x1="150" y1="150" x2="36.7" y2="232.3"/><line x1="150" y1="150" x2="25.3" y2="213.6"/><line x1="150" y1="150" x2="16.9" y2="193.3"/><line x1="150" y1="150" x2="11.7" y2="171.9"/><line x1="150" y1="150" x2="10.0" y2="150.0"/><line x1="150" y1="150" x2="11.7" y2="128.1"/><line x1="150" y1="150" x2="16.9" y2="106.7"/><line x1="150" y1="150" x2="25.3" y2="86.4"/><line x1="150" y1="150" x2="36.7" y2="67.7"/><line x1="150" y1="150" x2="51.0" y2="51.0"/><line x1="150" y1="150" x2="67.7" y2="36.7"/><line x1="150" y1="150" x2="86.4" y2="25.3"/><line x1="150" y1="150" x2="106.7" y2="16.9"/><line x1="150" y1="150" x2="128.1" y2="11.7"/><line x1="150" y1="150" x2="150.0" y2="10.0"/><line x1="150" y1="150" x2="171.9" y2="11.7"/><line x1="150" y1="150" x2="193.3" y2="16.9"/><line x1="150" y1="150" x2="213.6" y2="25.3"/><line x1="150" y1="150" x2="232.3" y2="36.7"/><line x1="150" y1="150" x2="249.0" y2="51.0"/><line x1="150" y1="150" x2="263.3" y2="67.7"/><line x1="150" y1="150" x2="274.7" y2="86.4"/><line x1="150" y1="150" x2="283.1" y2="106.7"/><line x1="150" y1="150" x2="288.3" y2="128.1"/>
+    </g>
+    <!-- dense drilled perforations (carbon-ceramic style) -->
+    <circle cx="209.7" cy="156.0" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="198.7" cy="185.0" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="174.7" cy="204.7" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="144.0" cy="209.7" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="115.0" cy="198.7" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="95.3" cy="174.7" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="90.3" cy="144.0" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="101.3" cy="115.0" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="125.3" cy="95.3" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="156.0" cy="90.3" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="185.0" cy="101.3" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="204.7" cy="125.3" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="223.9" cy="153.7" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="216.9" cy="181.7" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="199.6" cy="204.9" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="174.9" cy="219.7" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="146.3" cy="223.9" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="118.3" cy="216.9" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="95.1" cy="199.6" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="80.3" cy="174.9" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="76.1" cy="146.3" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="83.1" cy="118.3" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="100.4" cy="95.1" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="125.1" cy="80.3" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="153.7" cy="76.1" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="181.7" cy="83.1" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="204.9" cy="100.4" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="219.7" cy="125.1" r="3.0" fill="#050505" opacity="0.92"/>
+      <circle cx="237.0" cy="163.2" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="227.3" cy="192.1" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="208.2" cy="216.0" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="182.1" cy="231.9" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="152.2" cy="238.0" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="121.9" cy="233.4" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="95.1" cy="218.8" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="74.9" cy="195.9" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="63.7" cy="167.4" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="63.0" cy="136.8" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="72.7" cy="107.9" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="91.8" cy="84.0" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="117.9" cy="68.1" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="147.8" cy="62.0" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="178.1" cy="66.6" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="204.9" cy="81.2" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="225.1" cy="104.1" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="236.3" cy="132.6" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="252.0" cy="152.0" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="247.3" cy="180.7" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="234.7" cy="206.9" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="215.2" cy="228.4" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="190.5" cy="243.6" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="162.5" cy="251.2" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="133.5" cy="250.7" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="105.8" cy="241.9" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="81.7" cy="225.7" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="63.1" cy="203.4" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="51.6" cy="176.8" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="48.0" cy="148.0" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="52.7" cy="119.3" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="65.3" cy="93.1" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="84.8" cy="71.6" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="109.5" cy="56.4" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="137.5" cy="48.8" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="166.5" cy="49.3" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="194.2" cy="58.1" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="218.3" cy="74.3" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="236.9" cy="96.6" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="248.4" cy="123.2" r="3.2" fill="#050505" opacity="0.92"/>
+      <circle cx="265.2" cy="163.9" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="258.5" cy="191.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="245.5" cy="215.8" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="227.0" cy="236.8" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="204.0" cy="252.7" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="177.9" cy="262.6" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="150.1" cy="266.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="122.3" cy="262.7" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="96.2" cy="252.8" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="73.1" cy="236.9" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="54.6" cy="216.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="41.6" cy="191.2" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="34.9" cy="164.1" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="34.8" cy="136.1" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="41.5" cy="109.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="54.5" cy="84.2" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="73.0" cy="63.2" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="96.0" cy="47.3" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="122.1" cy="37.4" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="149.9" cy="34.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="177.7" cy="37.3" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="203.8" cy="47.2" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="226.9" cy="63.1" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="245.4" cy="84.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="258.4" cy="108.8" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="265.1" cy="135.9" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="279.8" cy="157.8" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="275.3" cy="184.6" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="265.4" cy="209.9" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="250.4" cy="232.6" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="231.0" cy="251.7" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="208.1" cy="266.3" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="182.7" cy="275.8" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="155.8" cy="279.9" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="128.7" cy="278.2" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="102.5" cy="271.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="78.4" cy="258.5" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="57.4" cy="241.2" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="40.4" cy="220.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="28.3" cy="195.7" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="21.4" cy="169.4" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="20.2" cy="142.2" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="24.7" cy="115.4" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="34.6" cy="90.1" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="49.6" cy="67.4" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="69.0" cy="48.3" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="91.9" cy="33.7" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="117.3" cy="24.2" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="144.2" cy="20.1" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="171.3" cy="21.8" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="197.5" cy="29.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="221.6" cy="41.5" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="242.6" cy="58.8" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="259.6" cy="80.0" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="271.7" cy="104.3" r="3.4" fill="#050505" opacity="0.92"/>
+      <circle cx="278.6" cy="130.6" r="3.4" fill="#050505" opacity="0.92"/>
+    <circle cx="150" cy="150" r="142" fill="none" stroke="#5a5a5a" stroke-width="1.5" opacity="0.45"/>
+    <circle cx="150" cy="150" r="55" fill="none" stroke="#000" stroke-width="1" opacity="0.35"/>
+
+    <!-- hub / hat -->
+    <circle cx="150" cy="150" r="55" fill="url(#hubGrad)" stroke="#1a1310" stroke-width="2"/>
+    <circle cx="150" cy="150" r="55" fill="none" stroke="#5a4a3a" stroke-width="1" opacity="0.5"/>
+    <!-- hub bolt ring -->
+    <circle cx="192.0" cy="150.0" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="186.4" cy="171.0" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="171.0" cy="186.4" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="150.0" cy="192.0" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="129.0" cy="186.4" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="113.6" cy="171.0" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="108.0" cy="150.0" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="113.6" cy="129.0" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="129.0" cy="113.6" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="150.0" cy="108.0" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="171.0" cy="113.6" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+        <circle cx="186.4" cy="129.0" r="3.0" fill="#c9c9c9" stroke="#555" stroke-width="0.5" opacity="0.92"/>
+    <!-- lug nuts -->
+    <circle cx="150.0" cy="124.0" r="5.2" fill="#d8d8d8" stroke="#666" stroke-width="0.8" opacity="0.92"/>
+        <circle cx="174.7" cy="142.0" r="5.2" fill="#d8d8d8" stroke="#666" stroke-width="0.8" opacity="0.92"/>
+        <circle cx="165.3" cy="171.0" r="5.2" fill="#d8d8d8" stroke="#666" stroke-width="0.8" opacity="0.92"/>
+        <circle cx="134.7" cy="171.0" r="5.2" fill="#d8d8d8" stroke="#666" stroke-width="0.8" opacity="0.92"/>
+        <circle cx="125.3" cy="142.0" r="5.2" fill="#d8d8d8" stroke="#666" stroke-width="0.8" opacity="0.92"/>
+    <!-- axle bushing -->
+    <circle cx="150" cy="150" r="16" fill="url(#axleGrad)" stroke="#3a3a3a" stroke-width="1.5"/>
+    <circle cx="150" cy="150" r="8" fill="#2a2a2a"/>
+  </g>
+
+  <!-- fixed caliper (does not rotate) - mounted on the right edge -->
+  <g class="caliper" filter="url(#softShadow)">
+    <path d="M 235 78
+             C 262 84, 278 108, 280 138
+             L 280 162
+             C 278 192, 262 216, 235 222
+             C 224 224, 214 220, 210 210
+             L 208 92
+             C 210 82, 222 76, 235 78 Z"
+          fill="url(#caliperGrad)" stroke="#5a0009" stroke-width="1.5"/>
+    <!-- vertical row of mounting bolts -->
+    <circle cx="242" cy="104" r="5.5" fill="#cfcfcf" stroke="#5a0009" stroke-width="1"/>
+    <circle cx="248" cy="128" r="5.5" fill="#cfcfcf" stroke="#5a0009" stroke-width="1"/>
+    <circle cx="248" cy="172" r="5.5" fill="#cfcfcf" stroke="#5a0009" stroke-width="1"/>
+    <circle cx="242" cy="196" r="5.5" fill="#cfcfcf" stroke="#5a0009" stroke-width="1"/>
+    <!-- mounting bracket into hub -->
+    <rect x="200" y="126" width="16" height="48" rx="4" fill="#241a17" stroke="#0f0b08" stroke-width="1"/>
+    <!-- vertical brand text -->
+    <text x="260" y="150" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700"
+          fill="#ffe9a8" letter-spacing="2" text-anchor="middle"
+          transform="rotate(90 260 150)">BRAKE ZONE</text>
+  </g>
+</svg>
+    </div>
+</section>
+
+<section class="filters">
+  <div class="filter-row">
+    <span class="filter-label">الفئة</span>
+    <div id="catFilters" style="display:contents"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">الموضع</span>
+    <div id="posFilters" style="display:contents"></div>
+  </div>
+  <div class="filter-row">
+    <select id="brandFilter"><option value="">كل الماركات</option></select>
+    <select id="modelFilter"><option value="">كل الموديلات</option></select>
+    <select id="sortFilter">
+      <option value="default">الترتيب الافتراضي</option>
+      <option value="price-asc">السعر: من الأقل للأعلى</option>
+      <option value="price-desc">السعر: من الأعلى للأقل</option>
+    </select>
+    <span class="result-count" id="resultCount"></span>
+  </div>
+</section>
+
+<main>
+  <div class="grid" id="productGrid"></div>
+</main>
+
+<footer>
+  <b>بريك زون — BRAKE ZONE</b> · جميع الأسعار بالريال العماني وتشمل هامش الخدمة · رسوم توصيل ثابتة 2.000 ر.ع لكل طلب · التوصيل داخل سلطنة عُمان فقط
+</footer>
+
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2>سلة المشتريات</h2>
+    <button class="drawer-close" onclick="closeCart()">×</button>
+  </div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot" id="cartFoot"></div>
+</aside>
+
+<!-- checkout info modal -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>بيانات التوصيل</h2>
+      <button class="drawer-close" onclick="closeCheckoutModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>الاسم الكامل</label>
+        <input type="text" id="custName" placeholder="مثال: سالم بن راشد">
+        <div class="field-error" id="errName">يرجى إدخال الاسم</div>
+      </div>
+      <div class="field">
+        <label>رقم الهاتف (سلطنة عُمان فقط)</label>
+        <div class="phone-field">
+          <div class="phone-code">🇴🇲 +968</div>
+          <input type="tel" id="custPhone" placeholder="9XXXXXXX" maxlength="8">
+        </div>
+        <div class="field-error" id="errPhone">يرجى إدخال رقم هاتف عُماني صحيح (8 أرقام)</div>
+      </div>
+      <div class="field">
+        <label>المحافظة</label>
+        <select id="custGov"></select>
+      </div>
+      <div class="field">
+        <label>الولاية</label>
+        <select id="custWilayat"></select>
+      </div>
+      <div class="oman-note">🚚 التوصيل متاح حالياً داخل سلطنة عُمان فقط</div>
+
+      <div class="field">
+        <label>طريقة الدفع</label>
+        <div class="pay-options">
+          <button type="button" class="pay-opt active" id="payCardBtn" onclick="selectPayment('card')">💳 بطاقة بنكية</button>
+          <button type="button" class="pay-opt" id="payAppleBtn" onclick="selectPayment('applepay')">🍎 Apple Pay</button>
+        </div>
+      </div>
+
+      <div id="cardFields" class="pay-fields">
+        <div class="field">
+          <label>الاسم على البطاقة</label>
+          <input type="text" id="cardName" placeholder="الاسم كما يظهر على البطاقة">
+        </div>
+        <div class="field">
+          <label>رقم البطاقة</label>
+          <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+        </div>
+        <div style="display:flex; gap:10px;">
+          <div class="field" style="flex:1;">
+            <label>تاريخ الانتهاء</label>
+            <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+          </div>
+          <div class="field" style="flex:1;">
+            <label>CVV</label>
+            <input type="text" id="cardCvv" placeholder="•••" maxlength="4">
+          </div>
+        </div>
+        <div class="field-error" id="errCard">يرجى إدخال بيانات بطاقة صحيحة</div>
+      </div>
+
+      <div id="applePayFields" class="pay-fields" style="display:none;">
+        <button type="button" class="apple-pay-btn" onclick="markApplePayReady()"> Pay</button>
+        <div class="field-error" id="errApple">يرجى الضغط على زر Apple Pay لتأكيد الدفع</div>
+      </div>
+
+      <div class="payment-note">🔒 بياناتك لا تُخزَّن أو تُرسل عبر هذا الموقع. سيتواصل معك فريقنا برابط دفع آمن ومرخّص لإتمام العملية فعلياً عبر بطاقتك أو Apple Pay، وهذا الطلب هو تأكيد أولي لسلة مشترياتك.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="checkout-btn" onclick="submitCheckout()">تأكيد الطلب وإرسال التفاصيل عبر واتساب</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ITEMS = [{"sl": 1, "oe": "3W0 698 151 P", "sku": "P05003", "brand": "BENTLEY", "brand_ar": "بنتلي", "desc": "Brake Pad FRONT Bentley Continental", "fits": "Bentley Continental (GT / GTC / Flying Spur)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 39.745, "models": ["Bentley Continental GT", "Bentley Continental GTC", "Bentley Continental Flying Spur"]}, {"sl": 2, "oe": "4M0 698 451 AA", "sku": "P85180", "brand": "VW/AUDI/PRS", "brand_ar": "فولكس فاجن / أودي / بورشه", "desc": "Brake Pad REAR Q7/Q8", "fits": "Audi Q7 / Audi Q8", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 41.316, "models": ["Audi Q7", "Audi Q8"]}, {"sl": 3, "oe": "34 11 6 855 156", "sku": "09.8952.75", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Disc FRONT E46", "fits": "BMW 3 Series (E46, 1998-2006)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 29.799, "models": ["BMW 3 Series (E46, 1998-2006)"]}, {"sl": 4, "oe": "34 21 6 792 229", "sku": "09.B338.11", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Disc REAR F30", "fits": "BMW 3 Series (F30/F31, 2012-2019)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 29.799, "models": ["BMW 3 Series (F30/F31, 2012-2019)"]}, {"sl": 5, "oe": "34 10 6 787 490", "sku": "09.B570.11", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Disc FRONT X3-F25/X4-F26", "fits": "BMW X3 (F25, 2010-2017) / BMW X4 (F26, 2014-2018)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 37.128, "models": ["BMW X3 (F25, 2010-2017)", "BMW X4 (F26, 2014-2018)"]}, {"sl": 6, "oe": "34 10 6 880 077", "sku": "09.D895.13", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Disc FRONT LH [G30/G11/G05]", "fits": "BMW 5 Series (G30) / 7 Series (G11) / X5 (G05) - Left", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 108.324, "models": ["BMW 5 Series (G30)", "BMW 7 Series (G11)", "BMW X5 (G05) - Left"]}, {"sl": 7, "oe": "34 10 6 880 078", "sku": "09.D896.13", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Disc FRONT RH [G30/G11/G05]", "fits": "BMW 5 Series (G30) / 7 Series (G11) / X5 (G05) - Right", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 108.324, "models": ["BMW 5 Series (G30)", "BMW 7 Series (G11)", "BMW X5 (G05) - Right"]}, {"sl": 8, "oe": "34 21 6 878 179", "sku": "09.D901.23", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Disc REAR -LH G30/F90", "fits": "BMW 5 Series (G30) / M5 (F90) - Left", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 100.995, "models": ["BMW 5 Series (G30)", "BMW M5 (F90) - Left"]}, {"sl": 9, "oe": "34 21 6 878 180", "sku": "09.D901.33", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Disc REAR -RH G30/F90", "fits": "BMW 5 Series (G30) / M5 (F90) - Right", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 100.995, "models": ["BMW 5 Series (G30)", "BMW M5 (F90) - Right"]}, {"sl": 10, "oe": "34 11 1 162 535", "sku": "P06012", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT E36/E34/E32", "fits": "BMW 3 Series (E36) / 5 Series (E34) / 7 Series (E32)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 23.517, "models": ["BMW 3 Series (E36)", "BMW 5 Series (E34)", "BMW 7 Series (E32)"]}, {"sl": 11, "oe": "34 21 1 164 582", "sku": "P06020", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad REAR E46/X3", "fits": "BMW 3 Series (E46) / BMW X3 (E83)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 22.47, "models": ["BMW 3 Series (E46)", "BMW X3 (E83)"]}, {"sl": 12, "oe": "34 11 6 761 252", "sku": "P06021", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT E38/E39/X5", "fits": "BMW 7 Series (E38) / 5 Series (E39) / X5 (E53)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.041, "models": ["BMW 7 Series (E38)", "BMW 5 Series (E39)", "BMW X5 (E53)"]}, {"sl": 13, "oe": "34 11 6 761 279", "sku": "P06022", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT E39", "fits": "BMW 5 Series (E39, 1995-2004)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 25.611, "models": ["BMW 5 Series (E39, 1995-2004)"]}, {"sl": 14, "oe": "34 11 2 180 420", "sku": "P06028", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT X5-E53", "fits": "BMW X5 (E53, 1999-2006)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 28.752, "models": ["BMW X5 (E53, 1999-2006)"]}, {"sl": 15, "oe": "34 21 6 753 850", "sku": "P06029", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad REAR E65", "fits": "BMW 7 Series (E65/E66, 2001-2008)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 22.994, "models": ["BMW 7 Series (E65/E66, 2001-2008)"]}, {"sl": 16, "oe": "34 11 6 769 951", "sku": "P06035", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT E90 4-Cyl", "fits": "BMW 3 Series (E90, 4-cylinder engines, 2005-2012)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 20.376, "models": ["BMW 3 Series (E90, 4-cylinder engines, 2005-2012)"]}, {"sl": 17, "oe": "34 11 6 771 868", "sku": "P06036", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT E90", "fits": "BMW 3 Series (E90, 2005-2012)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.564, "models": ["BMW 3 Series (E90, 2005-2012)"]}, {"sl": 18, "oe": "34 12 1 288 889", "sku": "P06037", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad REAR E90", "fits": "BMW 3 Series (E90, 2005-2012)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 20.899, "models": ["BMW 3 Series (E90, 2005-2012)"]}, {"sl": 19, "oe": "34 11 6 770 575", "sku": "P06047", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT E60", "fits": "BMW 5 Series (E60, 2003-2010)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 32.416, "models": ["BMW 5 Series (E60, 2003-2010)"]}, {"sl": 20, "oe": "34 21 6 783 555", "sku": "P06050", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad REAR X5/X6", "fits": "BMW X5 (E70) / X6 (E71), 2007-2014", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 27.181, "models": ["BMW X5 (E70)", "BMW X6 (E71), 2007-2014"]}, {"sl": 21, "oe": "34 11 6 763 617", "sku": "P06057", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT E60", "fits": "BMW 5 Series (E60, 2003-2010)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 26.658, "models": ["BMW 5 Series (E60, 2003-2010)"]}, {"sl": 22, "oe": "34 11 6 865 868", "sku": "P06058", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT X5/X6", "fits": "BMW X5 (E70) / X6 (E71), 2007-2014", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 33.464, "models": ["BMW X5 (E70)", "BMW X6 (E71), 2007-2014"]}, {"sl": 23, "oe": "34 11 6 775 310", "sku": "P06060", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT F10", "fits": "BMW 5 Series (F10, 2010-2017)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.041, "models": ["BMW 5 Series (F10, 2010-2017)"]}, {"sl": 24, "oe": "34 21 6 775 346", "sku": "P06061", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad REAR F10", "fits": "BMW 5 Series (F10, 2010-2017)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 23.517, "models": ["BMW 5 Series (F10, 2010-2017)"]}, {"sl": 25, "oe": "34 11 6 789 157", "sku": "P06068", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT R56/R55/R57/R58", "fits": "MINI Hardtop (R56) / Clubman (R55) / Convertible (R57) / Coupe (R58), 2007-2015", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 32.94, "models": ["MINI Hardtop (R56)", "MINI Clubman (R55)", "MINI Convertible (R57)", "MINI Coupe (R58), 2007-2015"]}, {"sl": 26, "oe": "34 21 6 850 569", "sku": "P06071", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad REAR F30/X3", "fits": "BMW 3 Series (F30) / X3 (F25)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 22.47, "models": ["BMW 3 Series (F30)", "BMW X3 (F25)"]}, {"sl": 27, "oe": "34 20 6 799 813", "sku": "P06072", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad REAR F30/F34", "fits": "BMW 3 Series (F30) / 3 Series GT (F34)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 26.658, "models": ["BMW 3 Series (F30)", "BMW 3 Series GT (F34)"]}, {"sl": 28, "oe": "34 11 6 783 554", "sku": "P06073", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT F01/X5/X6/F16", "fits": "BMW 7 Series (F01) / X5 (E70/F15) / X6 (E71/F16)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 49.692, "models": ["BMW 7 Series (F01)", "BMW X5 (E70/F15)", "BMW X6 (E71/F16)"]}, {"sl": 29, "oe": "34 11 6 850 885", "sku": "P06074", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT F10", "fits": "BMW 5 Series (F10, 2010-2017)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 26.658, "models": ["BMW 5 Series (F10, 2010-2017)"]}, {"sl": 30, "oe": "34 11 6 856 193", "sku": "P06075", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT F30", "fits": "BMW 3 Series (F30, 2012-2019)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 22.47, "models": ["BMW 3 Series (F30, 2012-2019)"]}, {"sl": 31, "oe": "34 11 6 878 876", "sku": "P06088", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT F30", "fits": "BMW 3 Series (F30, 2012-2019)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 36.605, "models": ["BMW 3 Series (F30, 2012-2019)"]}, {"sl": 32, "oe": "34 10 7 883 262", "sku": "P06100", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT G30/F90", "fits": "BMW 5 Series (G30) / M5 (F90)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 66.444, "models": ["BMW 5 Series (G30)", "BMW M5 (F90)"]}, {"sl": 33, "oe": "34 10 6 888 459", "sku": "P06106", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT G30/G11/X5-G05", "fits": "BMW 5 Series (G30) / 7 Series (G11) / X5 (G05)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 54.927, "models": ["BMW 5 Series (G30)", "BMW 7 Series (G11)", "BMW X5 (G05)"]}, {"sl": 34, "oe": "34 11 6 883 470", "sku": "P06107", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT G30/G11/X5-G05", "fits": "BMW 5 Series (G30) / 7 Series (G11) / X5 (G05)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 47.598, "models": ["BMW 5 Series (G30)", "BMW 7 Series (G11)", "BMW X5 (G05)"]}, {"sl": 35, "oe": "34 21 7 991 043", "sku": "P06109", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad REAR F30/G11/G05/G06", "fits": "BMW 3 Series (F30) / 7 Series (G11) / X5 (G05) / X6 (G06)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 38.175, "models": ["BMW 3 Series (F30)", "BMW 7 Series (G11)", "BMW X5 (G05)", "BMW X6 (G06)"]}, {"sl": 36, "oe": "34 11 7 852 969", "sku": "P06112", "brand": "BMW", "brand_ar": "بي إم دبليو", "desc": "Brake Pad FRONT X5/X6 [F15/F16/F85/F86]", "fits": "BMW X5 (F15/X5M F85) / X6 (F16/X6M F86), 2014-2019", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 60.162, "models": ["BMW X5 (F15/X5M F85)", "BMW X6 (F16/X6M F86), 2014-2019"]}, {"sl": 37, "oe": "92257988", "sku": "P59055", "brand": "CHEVROLET", "brand_ar": "شيفروليه", "desc": "Brake Pad FRONT CHEVROLET-Camaro", "fits": "Chevrolet Camaro (6th Gen, 2016-2024)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 25.087, "models": ["Chevrolet Camaro (6th Gen, 2016-2024)"]}, {"sl": 38, "oe": "39126138", "sku": "P59077", "brand": "CHEVROLET", "brand_ar": "شيفروليه", "desc": "Brake Pad FRONT CHEVROLET-Cruze [J300]", "fits": "Chevrolet Cruze (J300, 2009-2016)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.041, "models": ["Chevrolet Cruze (J300, 2009-2016)"]}, {"sl": 39, "oe": "68002193AA", "sku": "P11023", "brand": "DODGE", "brand_ar": "دودج", "desc": "Brake Pad FRONT DODGE-Challenger/Charger", "fits": "Dodge Challenger / Charger (LC/LD, 2011-2023)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 50.215, "models": ["Dodge Challenger", "Dodge Charger (LC/LD, 2011-2023)"]}, {"sl": 40, "oe": "68269953AA", "sku": "P11017", "brand": "DODGE", "brand_ar": "دودج", "desc": "Brake Pad FRONT DODGE-Challenger/Charger", "fits": "Dodge Challenger / Charger (LC/LD, 2011-2023)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 28.752, "models": ["Dodge Challenger", "Dodge Charger (LC/LD, 2011-2023)"]}, {"sl": 41, "oe": "68001440AC", "sku": "P11040", "brand": "DODGE", "brand_ar": "دودج", "desc": "Brake Pad REAR DODGE-Challenger/Charger", "fits": "Dodge Challenger / Charger (LC/LD, 2011-2023)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 31.369, "models": ["Dodge Challenger", "Dodge Charger (LC/LD, 2011-2023)"]}, {"sl": 42, "oe": "68504574AA", "sku": "P11041", "brand": "DODGE", "brand_ar": "دودج", "desc": "Brake Pad FRONT DODGE-Challenger/Charger", "fits": "Dodge Challenger / Charger (LC/LD, 2011-2023)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 35.557, "models": ["Dodge Challenger", "Dodge Charger (LC/LD, 2011-2023)"]}, {"sl": 43, "oe": "68147681AB", "sku": "P23149", "brand": "DODGE", "brand_ar": "دودج", "desc": "Brake Pad FRONT DODGE-Challenger/Charger", "fits": "Dodge Challenger / Charger (LC/LD, 2011-2023)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 31.369, "models": ["Dodge Challenger", "Dodge Charger (LC/LD, 2011-2023)"]}, {"sl": 44, "oe": "K68003776AA", "sku": "P18024", "brand": "DODGE", "brand_ar": "دودج", "desc": "Brake Pad REAR DODGE-Nitro", "fits": "Dodge Nitro (2007-2012)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 25.087, "models": ["Dodge Nitro (2007-2012)"]}, {"sl": 45, "oe": "45022-S9AE-60", "sku": "P28035", "brand": "HONDA", "brand_ar": "هوندا", "desc": "Brake Pad FRONT Accord VII/VIII", "fits": "Honda Accord (7th Gen 2003-2007 / 8th Gen 2008-2012)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 21.947, "models": ["Honda Accord (7th Gen 2003-2007 / 8th Gen 2008-2012)"]}, {"sl": 46, "oe": "43022-SWWG-03", "sku": "P28046", "brand": "HONDA", "brand_ar": "هوندا", "desc": "Brake Pad REAR CR-V III/IV", "fits": "Honda CR-V (3rd Gen 2007-2011 / 4th Gen 2012-2016)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 21.947, "models": ["Honda CR-V (3rd Gen 2007-2011 / 4th Gen 2012-2016)"]}, {"sl": 47, "oe": "C2P26112", "sku": "P59042", "brand": "JAGUAR", "brand_ar": "جاكوار", "desc": "Brake Pad REAR XF/XJ/XK/S-TYP", "fits": "Jaguar XF / XJ / XK / S-TYPE", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 25.087, "models": ["Jaguar XF", "Jaguar XJ", "Jaguar XK", "Jaguar S-TYPE"]}, {"sl": 48, "oe": "04466-3031179", "sku": "P83132", "brand": "LEXUS", "brand_ar": "لكزس", "desc": "Brake Pad REAR GS/IS-III/RC", "fits": "Lexus GS / IS (3rd Gen XE30, 2013-2020) / RC", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 25.087, "models": ["Lexus GS", "Lexus IS (3rd Gen XE30, 2013-2020)", "Lexus RC"]}, {"sl": 49, "oe": "04465-0W120", "sku": "P83146", "brand": "LEXUS", "brand_ar": "لكزس", "desc": "Brake Pad FRONT Lexus IS II", "fits": "Lexus IS (2nd Gen XE20, 2005-2013)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 32.94, "models": ["Lexus IS (2nd Gen XE20, 2005-2013)"]}, {"sl": 50, "oe": "LR027123", "sku": "08.A540.10", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc REAR Evoque [L538]", "fits": "Range Rover Evoque (L538, 2011-2018)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 25.087, "models": ["Range Rover Evoque (L538, 2011-2018)"]}, {"sl": 51, "oe": "LR027123", "sku": "08.A540.11", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc REAR Evoque [L538]", "fits": "Range Rover Evoque (L538, 2011-2018)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 25.087, "models": ["Range Rover Evoque (L538, 2011-2018)"]}, {"sl": 52, "oe": "SDB000614", "sku": "09.8875.31", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc REAR Sport/Discovery [L320/L319]", "fits": "Range Rover Sport (L320) / Discovery 4-LR4 (L319), 2005-2016", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 37.651, "models": ["Range Rover Sport (L320)", "Range Rover Discovery 4-LR4 (L319), 2005-2016"]}, {"sl": 53, "oe": "SDB500202", "sku": "09.9373.21", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc REAR R-Rover III [L322] 5.0 4x4 [09-12]", "fits": "Range Rover III (L322), 5.0 4x4, 2009-2012", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 33.987, "models": ["Range Rover III (L322), 5.0 4x4, 2009-2012"]}, {"sl": 54, "oe": "LR000571", "sku": "09.A427.11", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc FRONT Evoque", "fits": "Range Rover Evoque (L538, 2011-2018)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 35.557, "models": ["Range Rover Evoque (L538, 2011-2018)"]}, {"sl": 55, "oe": "LR011891", "sku": "09.A772.11", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc REAR R-Rover III [L322]", "fits": "Range Rover III (L322, 2002-2012)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 41.316, "models": ["Range Rover III (L322, 2002-2012)"]}, {"sl": 56, "oe": "LR016192", "sku": "09.A774.11", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc REAR R-Rover Sport [L320]", "fits": "Range Rover Sport (L320, 2005-2013)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 35.557, "models": ["Range Rover Sport (L320, 2005-2013)"]}, {"sl": 57, "oe": "SDB000624", "sku": "09.B858.11", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc FRONT Discovery V/R-Rover IV/Sport [L462/L405/L494]", "fits": "Discovery 5 (L462) / Range Rover IV (L405) / Range Rover Sport II (L494), 2013-2022", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 43.41, "models": ["Discovery 5 (L462)", "Range Rover IV (L405)", "Range Rover Sport II (L494), 2013-2022"]}, {"sl": 58, "oe": "LR059122", "sku": "09.C207.11", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc FRONT Discovery Sport / Evoque [L550/L538]", "fits": "Discovery Sport (L550, 2015-present) / Range Rover Evoque (L538, 2011-2018)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 40.269, "models": ["Discovery Sport (L550, 2015-present)", "Range Rover Evoque (L538, 2011-2018)"]}, {"sl": 59, "oe": "LR090699", "sku": "09.C209.11", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc REAR VELAR [L560]", "fits": "Range Rover Velar (L560, 2017-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 38.175, "models": ["Range Rover Velar (L560, 2017-present)"]}, {"sl": 60, "oe": "LR161889", "sku": "09.C514.11", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc FRONT Discovery V/R-Rover IV/Sport II [L494/L405/L462]", "fits": "Discovery 5 (L462) / Range Rover IV (L405) / Range Rover Sport II (L494), 2013-2022", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 52.309, "models": ["Discovery 5 (L462)", "Range Rover IV (L405)", "Range Rover Sport II (L494), 2013-2022"]}, {"sl": 61, "oe": "LR090684", "sku": "09.D063.21", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc FRONT VELAR [L560]", "fits": "Range Rover Velar (L560, 2017-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 43.41, "models": ["Range Rover Velar (L560, 2017-present)"]}, {"sl": 62, "oe": "LR090685", "sku": "09.D064.21", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Disc FRONT VELAR [L560]", "fits": "Range Rover Velar (L560, 2017-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 43.41, "models": ["Range Rover Velar (L560, 2017-present)"]}, {"sl": 63, "oe": "SOE000025", "sku": "A00265", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Wear Sensor REAR Discovery IV/Sport [L319/L320]", "fits": "Discovery 4-LR4 (L319) / Range Rover Sport (L320)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 15.141, "models": ["Discovery 4-LR4 (L319)", "Range Rover Sport (L320)"]}, {"sl": 64, "oe": "SEM500070", "sku": "A00267", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Wear Sensor FRONT Discovery IV [L319]", "fits": "Discovery 4 - LR4 (L319, 2009-2016)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 15.665, "models": ["Discovery 4 - LR4 (L319, 2009-2016)"]}, {"sl": 65, "oe": "LR012824", "sku": "A00490", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Wear Sensor FRONT R-Rover III [L322]", "fits": "Range Rover III (L322, 2002-2012)", "unit": "PCS", "cat": "حساسات فرامل", "pos": "أمامي", "price": 15.141, "models": ["Range Rover III (L322, 2002-2012)"]}, {"sl": 66, "oe": "LR045959", "sku": "A00498", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Wear Sensor FRONT Sport / Discovery V [L494]", "fits": "Range Rover Sport II (L494) / Discovery 5", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 15.665, "models": ["Range Rover Sport II (L494)", "Range Rover Discovery 5"]}, {"sl": 67, "oe": "LR160438", "sku": "P36035", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad FRONT R-Rover Velar [L560]", "fits": "Range Rover Velar (L560, 2017-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 32.416, "models": ["Range Rover Velar (L560, 2017-present)"]}, {"sl": 68, "oe": "LR122689", "sku": "P36039", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad REAR R-Rover Velar [L560]", "fits": "Range Rover Velar (L560, 2017-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 59.115, "models": ["Range Rover Velar (L560, 2017-present)"]}, {"sl": 69, "oe": "SFC500090", "sku": "P44012", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad FRONT R-Rover III [L322]", "fits": "Range Rover III (L322, 2002-2012)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 25.087, "models": ["Range Rover III (L322, 2002-2012)"]}, {"sl": 70, "oe": "SFP500140", "sku": "P44013", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad REAR R-Rover III/Sport", "fits": "Range Rover III (L322) / Range Rover Sport (L320)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 23.517, "models": ["Range Rover III (L322)", "Range Rover Sport (L320)"]}, {"sl": 71, "oe": "LR019618", "sku": "P44014", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad FRONT Discovery IV [L319] 3.0 4X4 [13-18]", "fits": "Discovery 4-LR4 (L319, 3.0 4x4, 2013-2018)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.041, "models": ["Discovery 4-LR4 (L319, 3.0 4x4, 2013-2018)"]}, {"sl": 72, "oe": "LR023888", "sku": "P44016", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad REAR Freelander LR2 [L359] [2.0/3.2] [06-15]", "fits": "Freelander 2 / LR2 (L359, 2006-2015)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 22.47, "models": ["Freelander 2", "LR2 (L359, 2006-2015)"]}, {"sl": 73, "oe": "LR134693", "sku": "P44020", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad FRONT Discovery Sport/Evoque [L550/L359/L538]", "fits": "Discovery Sport (L550) / Freelander 2-LR2 (L359) / Range Rover Evoque (L538)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 28.752, "models": ["Discovery Sport (L550)", "Freelander 2-LR2 (L359)", "Range Rover Evoque (L538)"]}, {"sl": 74, "oe": "LR051626", "sku": "P44022", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad FRONT Discovery IV/V/ Sport II [319/L462/L405/L320/L494]", "fits": "Discovery 4 (L319) / Discovery 5 (L462) / Range Rover IV (L405) / Range Rover Sport (L320/L494)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 32.94, "models": ["Discovery 4 (L319)", "Discovery 5 (L462)", "Range Rover IV (L405)", "Range Rover Sport (L320/L494)"]}, {"sl": 75, "oe": "LR015577", "sku": "P44025", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad REAR R-Rover III/Sport [L322/L320]", "fits": "Range Rover III (L322) / Range Rover Sport (L320)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 28.752, "models": ["Range Rover III (L322)", "Range Rover Sport (L320)"]}, {"sl": 76, "oe": "LR134709", "sku": "P44030", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad FRONT VELAR [L560]", "fits": "Range Rover Velar (L560, 2017-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 82.672, "models": ["Range Rover Velar (L560, 2017-present)"]}, {"sl": 77, "oe": "LR157388", "sku": "P44033", "brand": "LR | RR", "brand_ar": "لاند روفر / رنج روفر", "desc": "Brake Pad FRONT R-Rover / Sport [L460/L405/L461/L494]", "fits": "Range Rover V (L460) / Range Rover IV (L405) / Range Rover Sport III (L461) / Range Rover Sport II (L494)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 82.672, "models": ["Range Rover V (L460)", "Range Rover IV (L405)", "Range Rover Sport III (L461)", "Range Rover Sport II (L494)"]}, {"sl": 78, "oe": "203 423 01 12", "sku": "08.5178.31", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W203", "fits": "Mercedes C-Class (W203, 2000-2007)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 21.423, "models": ["Mercedes C-Class (W203, 2000-2007)"]}, {"sl": 79, "oe": "246 423 01 12", "sku": "08.B348.41", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR X156", "fits": "Mercedes GLA (X156, 2013-2020)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 25.087, "models": ["Mercedes GLA (X156, 2013-2020)"]}, {"sl": 80, "oe": "000 423 05 12", "sku": "08.D530.13", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W205", "fits": "Mercedes C-Class (W205, 2014-2021)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 41.316, "models": ["Mercedes C-Class (W205, 2014-2021)"]}, {"sl": 81, "oe": "167 423 87 00", "sku": "08.D983.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W167", "fits": "Mercedes GLE (W167, 2018-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 44.98, "models": ["Mercedes GLE (W167, 2018-present)"]}, {"sl": 82, "oe": "230 421 08 12", "sku": "09.9825.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W211", "fits": "Mercedes E-Class (W211, 2002-2009)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 38.175, "models": ["Mercedes E-Class (W211, 2002-2009)"]}, {"sl": 83, "oe": "000 423 09 12", "sku": "09.A358.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W211", "fits": "Mercedes E-Class (W211, 2002-2009)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 29.276, "models": ["Mercedes E-Class (W211, 2002-2009)"]}, {"sl": 84, "oe": "204 421 36 12", "sku": "09.A613.51", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W204/W212", "fits": "Mercedes C-Class (W204) / E-Class (W212), 2007-2016", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 35.034, "models": ["Mercedes C-Class (W204)", "Mercedes E-Class (W212), 2007-2016"]}, {"sl": 85, "oe": "000 421 12 12", "sku": "09.A621.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W204/W212", "fits": "Mercedes C-Class (W204) / E-Class (W212), 2007-2016", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 38.175, "models": ["Mercedes C-Class (W204)", "Mercedes E-Class (W212), 2007-2016"]}, {"sl": 86, "oe": "000 423 12 12", "sku": "09.A760.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W204", "fits": "Mercedes C-Class (W204, 2007-2014)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 32.416, "models": ["Mercedes C-Class (W204, 2007-2014)"]}, {"sl": 87, "oe": "221 421 16 12", "sku": "09.A817.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W221", "fits": "Mercedes S-Class (W221, 2005-2013)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 41.316, "models": ["Mercedes S-Class (W221, 2005-2013)"]}, {"sl": 88, "oe": "220 421 18 12", "sku": "09.A828.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W220", "fits": "Mercedes S-Class (W220, 1998-2005)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 41.84, "models": ["Mercedes S-Class (W220, 1998-2005)"]}, {"sl": 89, "oe": "463 421 03 12", "sku": "09.A917.10", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W463", "fits": "Mercedes G-Class (W463, 1990-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 44.98, "models": ["Mercedes G-Class (W463, 1990-present)"]}, {"sl": 90, "oe": "166 421 00 12", "sku": "09.A956.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W166", "fits": "Mercedes M-Class / GLE (W166, 2011-2019)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 41.84, "models": ["Mercedes M-Class", "Mercedes GLE (W166, 2011-2019)"]}, {"sl": 91, "oe": "166 423 01 12", "sku": "09.A959.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W166", "fits": "Mercedes M-Class / GLE (W166, 2011-2019)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 31.369, "models": ["Mercedes M-Class", "Mercedes GLE (W166, 2011-2019)"]}, {"sl": 92, "oe": "166 423 03 12", "sku": "09.A961.21", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W166", "fits": "Mercedes M-Class / GLE (W166, 2011-2019)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 32.416, "models": ["Mercedes M-Class", "Mercedes GLE (W166, 2011-2019)"]}, {"sl": 93, "oe": "204 421 07 12", "sku": "09.B280.41", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W204/W212", "fits": "Mercedes C-Class (W204) / E-Class (W212), 2007-2016", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 34.511, "models": ["Mercedes C-Class (W204)", "Mercedes E-Class (W212), 2007-2016"]}, {"sl": 94, "oe": "246 421 01 12", "sku": "09.B344.41", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W176/W246/X156", "fits": "Mercedes A-Class (W176) / B-Class (W246) / GLA (X156)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 31.369, "models": ["Mercedes A-Class (W176)", "Mercedes B-Class (W246)", "Mercedes GLA (X156)"]}, {"sl": 95, "oe": "246 421 25 12", "sku": "09.B436.51", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W176", "fits": "Mercedes A-Class (W176, 2012-2018)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 32.94, "models": ["Mercedes A-Class (W176, 2012-2018)"]}, {"sl": 96, "oe": "231 421 14 12", "sku": "09.B474.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT R231", "fits": "Mercedes SL (R231, 2012-2020)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 47.598, "models": ["Mercedes SL (R231, 2012-2020)"]}, {"sl": 97, "oe": "231 421 11 12", "sku": "09.B475.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT R231", "fits": "Mercedes SL (R231, 2012-2020)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 47.598, "models": ["Mercedes SL (R231, 2012-2020)"]}, {"sl": 98, "oe": "218 421 03 12", "sku": "09.B742.51", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W218", "fits": "Mercedes CLS (W218, 2011-2018)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 40.269, "models": ["Mercedes CLS (W218, 2011-2018)"]}, {"sl": 99, "oe": "000 421 16 12", "sku": "09.B744.51", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W212", "fits": "Mercedes E-Class (W212, 2009-2016)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 38.175, "models": ["Mercedes E-Class (W212, 2009-2016)"]}, {"sl": 100, "oe": "000 421 17 12", "sku": "09.B747.51", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT C218", "fits": "Mercedes CLS Coupe (C218, 2011-2018)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 38.175, "models": ["Mercedes CLS Coupe (C218, 2011-2018)"]}, {"sl": 101, "oe": "463 423 00 12", "sku": "09.B789.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W463", "fits": "Mercedes G-Class (W463, 1990-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 64.35, "models": ["Mercedes G-Class (W463, 1990-present)"]}, {"sl": 102, "oe": "246 421 26 12", "sku": "09.B807.41", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W246/W176/X156", "fits": "Mercedes B-Class (W246) / A-Class (W176) / GLA (X156)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 42.363, "models": ["Mercedes B-Class (W246)", "Mercedes A-Class (W176)", "Mercedes GLA (X156)"]}, {"sl": 103, "oe": "218 421 04 12", "sku": "09.B855.51", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W218/X218", "fits": "Mercedes CLS (W218) / CLS Shooting Brake (X218)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 50.215, "models": ["Mercedes CLS (W218)", "Mercedes CLS Shooting Brake (X218)"]}, {"sl": 104, "oe": "447 421 00 12", "sku": "09.C064.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W447", "fits": "Mercedes V-Class / Vito (W447, 2014-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 38.175, "models": ["Mercedes V-Class", "Mercedes Vito (W447, 2014-present)"]}, {"sl": 105, "oe": "222 421 26 12", "sku": "09.C127.33", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W222/C217/A217", "fits": "Mercedes S-Class (W222) / S-Class Coupe (C217) / S-Class Cabriolet (A217)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 237.105, "models": ["Mercedes S-Class (W222)", "Mercedes S-Class Coupe (C217)", "Mercedes S-Class Cabriolet (A217)"]}, {"sl": 106, "oe": "000 421 24 12", "sku": "09.D525.13", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W205", "fits": "Mercedes C-Class (W205, 2014-2021)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 41.316, "models": ["Mercedes C-Class (W205, 2014-2021)"]}, {"sl": 107, "oe": "000 421 25 12", "sku": "09.D526.13", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W205/W213", "fits": "Mercedes C-Class (W205) / E-Class (W213)", "unit": "SET", "cat": "أقراص فرامل", "pos": "أمامي", "price": 43.934, "models": ["Mercedes C-Class (W205)", "Mercedes E-Class (W213)"]}, {"sl": 108, "oe": "000 421 26 12", "sku": "09.D527.13", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W205", "fits": "Mercedes C-Class (W205, 2014-2021)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 41.84, "models": ["Mercedes C-Class (W205, 2014-2021)"]}, {"sl": 109, "oe": "000 423 17 12", "sku": "09.D532.13", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W238", "fits": "Mercedes E-Class Coupe (C238, 2017-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 62.779, "models": ["Mercedes E-Class Coupe (C238, 2017-present)"]}, {"sl": 110, "oe": "167 421 36 00", "sku": "09.D601.43", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W167", "fits": "Mercedes GLE (W167, 2018-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 91.572, "models": ["Mercedes GLE (W167, 2018-present)"]}, {"sl": 111, "oe": "463 421 12 00", "sku": "09.D761.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W463", "fits": "Mercedes G-Class (W463, 1990-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 69.585, "models": ["Mercedes G-Class (W463, 1990-present)"]}, {"sl": 112, "oe": "463 423 01 00", "sku": "09.D764.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W463", "fits": "Mercedes G-Class (W463, 1990-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 46.551, "models": ["Mercedes G-Class (W463, 1990-present)"]}, {"sl": 113, "oe": "470 423 02 00", "sku": "09.D942.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc REAR W470", "fits": "Mercedes X-Class Pickup (2017-2020)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 30.323, "models": ["Mercedes X-Class Pickup (2017-2020)"]}, {"sl": 114, "oe": "167 421 09 01", "sku": "09.D982.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W167", "fits": "Mercedes GLE (W167, 2018-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 62.256, "models": ["Mercedes GLE (W167, 2018-present)"]}, {"sl": 115, "oe": "167 421 10 01", "sku": "09.D982.21", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W167", "fits": "Mercedes GLE (W167, 2018-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 58.068, "models": ["Mercedes GLE (W167, 2018-present)"]}, {"sl": 116, "oe": "247 421 07 12", "sku": "09.D985.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W247", "fits": "Mercedes B-Class (W247, 2019-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 37.651, "models": ["Mercedes B-Class (W247, 2019-present)"]}, {"sl": 117, "oe": "247 421 20 12", "sku": "09.D986.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W247", "fits": "Mercedes B-Class (W247, 2019-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 42.363, "models": ["Mercedes B-Class (W247, 2019-present)"]}, {"sl": 118, "oe": "164 421 04 12", "sku": "09.R104.11", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Disc FRONT W164/W251", "fits": "Mercedes M-Class (W164) / R-Class (W251)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 43.934, "models": ["Mercedes M-Class (W164)", "Mercedes R-Class (W251)"]}, {"sl": 119, "oe": "220 540 07 17", "sku": "A00274", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Wear Sensor W211/W220", "fits": "Mercedes E-Class (W211) / S-Class (W220)", "unit": "SET", "cat": "حساسات فرامل", "pos": "", "price": 13.885, "models": ["Mercedes E-Class (W211)", "Mercedes S-Class (W220)"]}, {"sl": 120, "oe": "164 540 10 17", "sku": "A00286", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Wear Sensor W463/W166/W211", "fits": "Mercedes G-Class (W463) / M-Class-GLE (W166) / E-Class (W211)", "unit": "PCS", "cat": "حساسات فرامل", "pos": "", "price": 13.047, "models": ["Mercedes G-Class (W463)", "Mercedes M-Class-GLE (W166)", "Mercedes E-Class (W211)"]}, {"sl": 121, "oe": "231 905 00 14", "sku": "A00483", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Wear Sensor W222", "fits": "Mercedes S-Class (W222, 2013-2020)", "unit": "PCS", "cat": "حساسات فرامل", "pos": "", "price": 13.047, "models": ["Mercedes S-Class (W222, 2013-2020)"]}, {"sl": 122, "oe": "005 420 98 20.", "sku": "P50003", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W463", "fits": "Mercedes G-Class (W463, 1990-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.564, "models": ["Mercedes G-Class (W463, 1990-present)"]}, {"sl": 123, "oe": "005 420 05 20", "sku": "P50018", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W140", "fits": "Mercedes S-Class (W140, 1991-1998)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.564, "models": ["Mercedes S-Class (W140, 1991-1998)"]}, {"sl": 124, "oe": "000 420 97 20", "sku": "P50020", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W463", "fits": "Mercedes G-Class (W463, 1990-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 24.564, "models": ["Mercedes G-Class (W463, 1990-present)"]}, {"sl": 125, "oe": "002 420 44 20", "sku": "P50023", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W202/W210", "fits": "Mercedes C-Class (W202) / E-Class (W210)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 21.947, "models": ["Mercedes C-Class (W202)", "Mercedes E-Class (W210)"]}, {"sl": 126, "oe": "002 420 50 20", "sku": "P50026", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W210", "fits": "Mercedes E-Class (W210, 1995-2003)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 21.947, "models": ["Mercedes E-Class (W210, 1995-2003)"]}, {"sl": 127, "oe": "000 421 41 10", "sku": "P50031", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W447", "fits": "Mercedes V-Class / Vito (W447, 2014-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.041, "models": ["Mercedes V-Class", "Mercedes Vito (W447, 2014-present)"]}, {"sl": 128, "oe": "005 420 62 20", "sku": "P50045", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W203", "fits": "Mercedes C-Class (W203, 2000-2007)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 23.517, "models": ["Mercedes C-Class (W203, 2000-2007)"]}, {"sl": 129, "oe": "003 420 60 20", "sku": "P50046", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W203", "fits": "Mercedes C-Class (W203, 2000-2007)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 23.517, "models": ["Mercedes C-Class (W203, 2000-2007)"]}, {"sl": 130, "oe": "004 420 87 20", "sku": "P50049", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W211", "fits": "Mercedes E-Class (W211, 2002-2009)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 25.611, "models": ["Mercedes E-Class (W211, 2002-2009)"]}, {"sl": 131, "oe": "006 420 43 20", "sku": "P50050", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W639", "fits": "Mercedes Viano / Vito (W639, 2003-2014)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.564, "models": ["Mercedes Viano", "Mercedes Vito (W639, 2003-2014)"]}, {"sl": 132, "oe": "003 420 51 20", "sku": "P50052", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W221/W212/W211", "fits": "Mercedes S-Class (W221) / E-Class (W212/W211)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 23.517, "models": ["Mercedes S-Class (W221)", "Mercedes E-Class (W212/W211)"]}, {"sl": 133, "oe": "003 420 71 20", "sku": "P50062", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W211/W220", "fits": "Mercedes E-Class (W211) / S-Class (W220)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 33.464, "models": ["Mercedes E-Class (W211)", "Mercedes S-Class (W220)"]}, {"sl": 134, "oe": "004 420 52 20", "sku": "P50064", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W164/W251", "fits": "Mercedes M-Class (W164) / R-Class (W251)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 21.423, "models": ["Mercedes M-Class (W164)", "Mercedes R-Class (W251)"]}, {"sl": 135, "oe": "007 420 57 20", "sku": "P50067", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W204", "fits": "Mercedes C-Class (W204, 2007-2014)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 26.658, "models": ["Mercedes C-Class (W204, 2007-2014)"]}, {"sl": 136, "oe": "007 420 75 20", "sku": "P50069", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W212/W204", "fits": "Mercedes E-Class (W212) / C-Class (W204)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 32.416, "models": ["Mercedes E-Class (W212)", "Mercedes C-Class (W204)"]}, {"sl": 137, "oe": "007 420 56 20", "sku": "P50070", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W204", "fits": "Mercedes C-Class (W204, 2007-2014)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 29.276, "models": ["Mercedes C-Class (W204, 2007-2014)"]}, {"sl": 138, "oe": "003 420 27 20", "sku": "P50072", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W203/W209/C208", "fits": "Mercedes C-Class (W203) / CLK (C209/C208)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 20.376, "models": ["Mercedes C-Class (W203)", "Mercedes CLK (C209/C208)"]}, {"sl": 139, "oe": "008 420 50 20", "sku": "P50085", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT Sprinter", "fits": "Mercedes-Benz Sprinter", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 26.658, "models": ["Mercedes-Benz Sprinter"]}, {"sl": 140, "oe": "007 420 66 20", "sku": "P50086", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT X204", "fits": "Mercedes GLK (X204, 2008-2015)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 26.658, "models": ["Mercedes GLK (X204, 2008-2015)"]}, {"sl": 141, "oe": "004 420 50 20", "sku": "P50092", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT C209/A209/R171", "fits": "Mercedes CLK Cabrio (A209) / SLK (R171)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 35.557, "models": ["Mercedes CLK Cabrio (A209)", "Mercedes SLK (R171)"]}, {"sl": 142, "oe": "006 420 35 20", "sku": "P50101", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR X166/W166", "fits": "Mercedes GL-GLS (X166) / M-Class-GLE (W166)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 30.323, "models": ["Mercedes GL-GLS (X166)", "Mercedes M-Class-GLE (W166)"]}, {"sl": 143, "oe": "008 420 00 20", "sku": "P50102", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT X166/W166", "fits": "Mercedes GL-GLS (X166) / M-Class-GLE (W166)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 32.94, "models": ["Mercedes GL-GLS (X166)", "Mercedes M-Class-GLE (W166)"]}, {"sl": 144, "oe": "005 420 49 20", "sku": "P50104", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W204", "fits": "Mercedes C-Class (W204, 2007-2014)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 22.47, "models": ["Mercedes C-Class (W204, 2007-2014)"]}, {"sl": 145, "oe": "007 420 81 20", "sku": "P50108", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W166", "fits": "Mercedes M-Class / GLE (W166, 2011-2019)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 29.276, "models": ["Mercedes M-Class", "Mercedes GLE (W166, 2011-2019)"]}, {"sl": 146, "oe": "008 420 35 20", "sku": "P50111", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W222", "fits": "Mercedes S-Class (W222, 2013-2020)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 30.846, "models": ["Mercedes S-Class (W222, 2013-2020)"]}, {"sl": 147, "oe": "006 420 37 20", "sku": "P50112", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W166/X166", "fits": "Mercedes M-Class-GLE (W166) / GL-GLS (X166)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 34.511, "models": ["Mercedes M-Class-GLE (W166)", "Mercedes GL-GLS (X166)"]}, {"sl": 148, "oe": "164 420 13 20", "sku": "P50115", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT X164", "fits": "Mercedes GL-Class (X164, 2006-2012)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 41.316, "models": ["Mercedes GL-Class (X164, 2006-2012)"]}, {"sl": 149, "oe": "164 420 24 20", "sku": "P50116", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W221", "fits": "Mercedes S-Class (W221, 2005-2013)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 36.081, "models": ["Mercedes S-Class (W221, 2005-2013)"]}, {"sl": 150, "oe": "008 420 37 20", "sku": "P50119", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W205", "fits": "Mercedes C-Class (W205, 2014-2021)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 28.752, "models": ["Mercedes C-Class (W205, 2014-2021)"]}, {"sl": 151, "oe": "008 420 32 20", "sku": "P50121", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W176/C117/X156", "fits": "Mercedes A-Class (W176) / CLA (C117) / GLA (X156)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 42.886, "models": ["Mercedes A-Class (W176)", "Mercedes CLA (C117)", "Mercedes GLA (X156)"]}, {"sl": 152, "oe": "008 420 11 20", "sku": "P50125", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W222", "fits": "Mercedes S-Class (W222, 2013-2020)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 35.034, "models": ["Mercedes S-Class (W222, 2013-2020)"]}, {"sl": 153, "oe": "008 420 07 20", "sku": "P50130", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W222", "fits": "Mercedes S-Class (W222, 2013-2020)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 59.115, "models": ["Mercedes S-Class (W222, 2013-2020)"]}, {"sl": 154, "oe": "008 420 61 20", "sku": "P50134", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W463", "fits": "Mercedes G-Class (W463, 1990-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 25.087, "models": ["Mercedes G-Class (W463, 1990-present)"]}, {"sl": 155, "oe": "000 420 62 00", "sku": "P50141", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W213", "fits": "Mercedes E-Class (W213, 2016-2023)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 31.369, "models": ["Mercedes E-Class (W213, 2016-2023)"]}, {"sl": 156, "oe": "000 420 68 03", "sku": "P50149", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W167", "fits": "Mercedes GLE (W167, 2018-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 43.934, "models": ["Mercedes GLE (W167, 2018-present)"]}, {"sl": 157, "oe": "000 420 99 05", "sku": "P50151", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W166", "fits": "Mercedes M-Class / GLE (W166, 2011-2019)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 30.323, "models": ["Mercedes M-Class", "Mercedes GLE (W166, 2011-2019)"]}, {"sl": 158, "oe": "000 420 94 00", "sku": "P50154", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W205/C190", "fits": "Mercedes C-Class (W205) / AMG GT (C190)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 60.685, "models": ["Mercedes C-Class (W205)", "Mercedes AMG GT (C190)"]}, {"sl": 159, "oe": "000 420 35 04", "sku": "P50166", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W177/X247", "fits": "Mercedes A-Class (W177) / GLB (X247)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 56.498, "models": ["Mercedes A-Class (W177)", "Mercedes GLB (X247)"]}, {"sl": 160, "oe": "000 420 94 05", "sku": "P50169", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad REAR W223/W206/X254", "fits": "Mercedes S-Class (W223) / C-Class (W206) / GLC (X254)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 48.645, "models": ["Mercedes S-Class (W223)", "Mercedes C-Class (W206)", "Mercedes GLC (X254)"]}, {"sl": 161, "oe": "000 420 36 03", "sku": "P50171", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W223", "fits": "Mercedes S-Class (W223, 2020-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 56.498, "models": ["Mercedes S-Class (W223, 2020-present)"]}, {"sl": 162, "oe": "004 420 75 20", "sku": "P50177", "brand": "BENZ", "brand_ar": "مرسيدس", "desc": "Brake Pad FRONT W221", "fits": "Mercedes S-Class (W221, 2005-2013)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 61.209, "models": ["Mercedes S-Class (W221, 2005-2013)"]}, {"sl": 163, "oe": "34 11 6 772 892", "sku": "P06034", "brand": "MINI", "brand_ar": "ميني", "desc": "Brake Pad FRONT F55/F56/F57", "fits": "MINI Hardtop 3-door (F56) / 5-door (F55) / Convertible (F57), 2014-2024", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 20.899, "models": ["MINI Hardtop 3-door (F56)", "MINI 5-door (F55)", "MINI Convertible (F57), 2014-2024"]}, {"sl": 164, "oe": "34 11 6 798 469", "sku": "P06051", "brand": "MINI", "brand_ar": "ميني", "desc": "Brake Pad FRONT R53", "fits": "MINI Cooper S (R53, 2002-2006)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 26.134, "models": ["MINI Cooper S (R53, 2002-2006)"]}, {"sl": 165, "oe": "34 21 6 778 327", "sku": "P06052", "brand": "MINI", "brand_ar": "ميني", "desc": "Brake Pad REAR MR56/R55/R57/R58", "fits": "MINI Hardtop (R56) / Clubman (R55) / Convertible (R57) / Coupe (R58), 2007-2015", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 18.805, "models": ["MINI Hardtop (R56)", "MINI Clubman (R55)", "MINI Convertible (R57)", "MINI Coupe (R58), 2007-2015"]}, {"sl": 166, "oe": "4615A117", "sku": "09.N264.11", "brand": "MITSUBISHI", "brand_ar": "ميتسوبيشي", "desc": "Brake Disc FRONT Lancer VII", "fits": "Mitsubishi Lancer (7th Gen / CS, 2000-2010)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 29.276, "models": ["Mitsubishi Lancer (7th Gen / CS, 2000-2010)"]}, {"sl": 167, "oe": "D10601LB2B", "sku": "P56081", "brand": "NISSAN", "brand_ar": "نيسان", "desc": "Brake Pad FRONT PATROL VI", "fits": "Nissan Patrol VI (Y62, 2010-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 31.369, "models": ["Nissan Patrol VI (Y62, 2010-present)"]}, {"sl": 168, "oe": "D4060-1LB0A", "sku": "P56082", "brand": "NISSAN", "brand_ar": "نيسان", "desc": "Brake Pad REAR PATROL VI", "fits": "Nissan Patrol VI (Y62, 2010-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 24.041, "models": ["Nissan Patrol VI (Y62, 2010-present)"]}, {"sl": 169, "oe": "D1060JL00K", "sku": "P56089", "brand": "NISSAN", "brand_ar": "نيسان", "desc": "Brake Pad REAR 370Z Roadster", "fits": "Nissan 370Z Roadster (Z34, 2009-2020)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 23.517, "models": ["Nissan 370Z Roadster (Z34, 2009-2020)"]}, {"sl": 170, "oe": "AY060NS046", "sku": "P56095", "brand": "NISSAN", "brand_ar": "نيسان", "desc": "Brake Pad REAR 370Z Roadster", "fits": "Nissan 370Z Roadster (Z34, 2009-2020)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 22.47, "models": ["Nissan 370Z Roadster (Z34, 2009-2020)"]}, {"sl": 171, "oe": "958 351 403 01", "sku": "09.C549.11", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc FRONT Q7/Cayenne", "fits": "Audi Q7 / Porsche Cayenne (shared platform)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 50.215, "models": ["Audi Q7", "Porsche Cayenne (shared platform)"]}, {"sl": 172, "oe": "970 351 403 01", "sku": "09.C549.21", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc FRONT PANAMERA", "fits": "Porsche Panamera (970, 2010-2016)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 50.215, "models": ["Porsche Panamera (970, 2010-2016)"]}, {"sl": 173, "oe": "970 351 404 01", "sku": "09.C549.31", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc FRONT RH Panamera", "fits": "Porsche Panamera - Right side", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 50.215, "models": ["Porsche Panamera - Right side"]}, {"sl": 174, "oe": "970 352 403 00", "sku": "09.C878.21", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc REAR LH Panamera", "fits": "Porsche Panamera - Left side", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 41.316, "models": ["Porsche Panamera - Left side"]}, {"sl": 175, "oe": "9Y0 615 301", "sku": "09.C985.21", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc FRONT LH Panamera", "fits": "Porsche Panamera - Left side", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 50.215, "models": ["Porsche Panamera - Left side"]}, {"sl": 176, "oe": "9Y0 615 302", "sku": "09.C986.21", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc FRONT RH Panamera", "fits": "Porsche Panamera - Right side", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 50.215, "models": ["Porsche Panamera - Right side"]}, {"sl": 177, "oe": "991 352 401 00", "sku": "09.D934.11", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc REAR LH 911", "fits": "Porsche 911 (991, 2012-2019) - Left side", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 51.786, "models": ["Porsche 911 (991, 2012-2019) - Left side"]}, {"sl": 178, "oe": "991 352 402 00", "sku": "09.D935.11", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc REAR RH 911", "fits": "Porsche 911 (991, 2012-2019) - Right side", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 51.786, "models": ["Porsche 911 (991, 2012-2019) - Right side"]}, {"sl": 179, "oe": "971 615 301 L", "sku": "09.E899.11", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc FRONT LH Panamera", "fits": "Porsche Panamera (971, 2017-present) - Left side", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 69.585, "models": ["Porsche Panamera (971, 2017-present) - Left side"]}, {"sl": 180, "oe": "971 615 302 L", "sku": "09.E900.11", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Disc FRONT RH Panamera", "fits": "Porsche Panamera (971, 2017-present) - Right side", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 69.585, "models": ["Porsche Panamera (971, 2017-present) - Right side"]}, {"sl": 181, "oe": "981 609 163 00", "sku": "A00477", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Wear Sensor REAR Boxter/Cayman", "fits": "Porsche Boxster / Cayman", "unit": "PCS", "cat": "حساسات فرامل", "pos": "خلفي", "price": 15.665, "models": ["Porsche Boxster", "Porsche Cayman"]}, {"sl": 182, "oe": "991 609 161 00", "sku": "A00480", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Wear Sensor FRONT 911/Cayma", "fits": "Porsche 911 / Cayman", "unit": "PCS", "cat": "حساسات فرامل", "pos": "أمامي", "price": 14.617, "models": ["Porsche 911", "Porsche Cayman"]}, {"sl": 183, "oe": "996 352 939 00", "sku": "P65008", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad REAR Cayman/Boxter", "fits": "Porsche Cayman / Boxster", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 25.087, "models": ["Porsche Cayman", "Porsche Boxster"]}, {"sl": 184, "oe": "997 351 939 03", "sku": "P65014", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad FRONT Carerra/Boxter/Cayman", "fits": "Porsche Carrera (911) / Boxster / Cayman", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 33.464, "models": ["Porsche Carrera (911)", "Porsche Boxster", "Porsche Cayman"]}, {"sl": 185, "oe": "970 351 949 05", "sku": "P65020", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad REAR Panamera", "fits": "Porsche Panamera", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 31.893, "models": ["Porsche Panamera"]}, {"sl": 186, "oe": "95B 698 151 E", "sku": "P65033", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad FRONT Macan/Panamera", "fits": "Porsche Macan / Panamera", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 51.786, "models": ["Porsche Macan", "Porsche Panamera"]}, {"sl": 187, "oe": "95B 698 451 A", "sku": "P65040", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad REAR Macan", "fits": "Porsche Macan (95B, 2014-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 34.511, "models": ["Porsche Macan (95B, 2014-present)"]}, {"sl": 188, "oe": "9Y0 698 451 J", "sku": "P65042", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad REAR Careera", "fits": "Porsche Carrera (911, 992)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 38.175, "models": ["Porsche Carrera (911, 992)"]}, {"sl": 189, "oe": "9Y0 698 451 AB", "sku": "P65044", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad REAR Careera", "fits": "Porsche Carrera (911, 992)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 57.021, "models": ["Porsche Carrera (911, 992)"]}, {"sl": 190, "oe": "95B 698 151 BA", "sku": "P65047", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad FRONT Macan/Panamera", "fits": "Porsche Macan / Panamera", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 57.021, "models": ["Porsche Macan", "Porsche Panamera"]}, {"sl": 191, "oe": "9Y0 698 151 K", "sku": "P65049", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad FRONT Cayenne", "fits": "Porsche Cayenne (9Y0, 2018-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 69.585, "models": ["Porsche Cayenne (9Y0, 2018-present)"]}, {"sl": 192, "oe": "992 698 451 A", "sku": "P65056", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad REAR 911 Convertible", "fits": "Porsche 911 Convertible (992, 2019-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 56.498, "models": ["Porsche 911 Convertible (992, 2019-present)"]}, {"sl": 193, "oe": "9Y0 698 151 AD", "sku": "P65057", "brand": "PORSCHE", "brand_ar": "بورشه", "desc": "Brake Pad FRONT Cayenne", "fits": "Porsche Cayenne (9Y0, 2018-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 74.82, "models": ["Porsche Cayenne (9Y0, 2018-present)"]}, {"sl": 194, "oe": "800824200A", "sku": "P09029", "brand": "TESLA", "brand_ar": "تيسلا", "desc": "Brake Pad FRONT Tesla EV/AWD Model 3 [5YJ3] [20-24]", "fits": "Tesla Model 3 (5YJ3, 2020-2024)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 69.585, "models": ["Tesla Model 3 (5YJ3, 2020-2024)"]}, {"sl": 195, "oe": "800824600A", "sku": "P09030", "brand": "TESLA", "brand_ar": "تيسلا", "desc": "Brake Pad REAR Tesla EV/AWD Model 3 [5YJ3] [20-24]", "fits": "Tesla Model 3 (5YJ3, 2020-2024)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 64.35, "models": ["Tesla Model 3 (5YJ3, 2020-2024)"]}, {"sl": 196, "oe": "04465-04090", "sku": "P83102", "brand": "TOYOTA", "brand_ar": "تويوتا", "desc": "Brake Pad FRONT FJ Cruiser / Fortuner", "fits": "Toyota FJ Cruiser / Fortuner", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 23.517, "models": ["Toyota FJ Cruiser", "Toyota Fortuner"]}, {"sl": 197, "oe": "04466-12130", "sku": "P83133", "brand": "TOYOTA", "brand_ar": "تويوتا", "desc": "Brake Pad REAR Corolla", "fits": "Toyota Corolla", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 20.899, "models": ["Toyota Corolla"]}, {"sl": 198, "oe": "04465-0K240", "sku": "P83140", "brand": "TOYOTA", "brand_ar": "تويوتا", "desc": "Brake Pad FRONT HILUX VII Pickup", "fits": "Toyota Hilux (7th Gen, AN120/130, 2015-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.041, "models": ["Toyota Hilux (7th Gen, AN120/130, 2015-present)"]}, {"sl": 199, "oe": "L04005", "sku": "L04005", "brand": "LUBRICANT", "brand_ar": "زيوت (لجميع السيارات)", "desc": "Brake Fluid DOT 4 [500ML][24Pcs/BX]", "fits": "Universal - all vehicles (DOT 4 specification)", "unit": "PCS", "cat": "زيت فرامل", "pos": "", "price": 13.361, "models": ["Universal - all vehicles (DOT 4 specification)"]}, {"sl": 200, "oe": "L04010", "sku": "L04010", "brand": "LUBRICANT", "brand_ar": "زيوت (لجميع السيارات)", "desc": "Brake Fluid DOT 4 [1000ML][12Pcs/BX]", "fits": "Universal - all vehicles (DOT 4 specification)", "unit": "PCS", "cat": "زيت فرامل", "pos": "", "price": 14.199, "models": ["Universal - all vehicles (DOT 4 specification)"]}, {"sl": 201, "oe": "L04210", "sku": "L04210", "brand": "LUBRICANT", "brand_ar": "زيوت (لجميع السيارات)", "desc": "Brake Fluid DOT 4 LV", "fits": "Universal - all vehicles (DOT 4 Low Viscosity)", "unit": "PCS", "cat": "زيت فرامل", "pos": "", "price": 15.141, "models": ["Universal - all vehicles (DOT 4 Low Viscosity)"]}, {"sl": 202, "oe": "L05005", "sku": "L05005", "brand": "LUBRICANT", "brand_ar": "زيوت (لجميع السيارات)", "desc": "Brake Fluid DOT 5.1 [500ML]", "fits": "Universal - all vehicles (DOT 5.1 specification)", "unit": "PCS", "cat": "زيت فرامل", "pos": "", "price": 13.57, "models": ["Universal - all vehicles (DOT 5.1 specification)"]}, {"sl": 203, "oe": "L05010", "sku": "L05010", "brand": "LUBRICANT", "brand_ar": "زيوت (لجميع السيارات)", "desc": "Brake Fluid PRIME LINE - DOT 5.1", "fits": "Universal - all vehicles (DOT 5.1 specification)", "unit": "PCS", "cat": "زيت فرامل", "pos": "", "price": 15.35, "models": ["Universal - all vehicles (DOT 5.1 specification)"]}, {"sl": 204, "oe": "1K0 615 601 M", "sku": "08.A202.11", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Disc REAR Golf V/VI/Passat/EOS/Tiguan/Touran", "fits": "VW Golf V/VI, Passat, EOS, Tiguan, Touran", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 23.517, "models": ["VW Golf V", "VW VI, Passat, EOS, Tiguan, Touran"]}, {"sl": 205, "oe": "1K0 615 601 AA", "sku": "08.B413.11", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Disc REAR Golf V/VI/VII/Beetle/Caddy/Touran", "fits": "VW Golf V/VI/VII, Beetle, Caddy, Touran", "unit": "SET", "cat": "أقراص فرامل", "pos": "خلفي", "price": 25.087, "models": ["VW Golf V", "VW VI", "VW VII, Beetle, Caddy, Touran"]}, {"sl": 206, "oe": "1K0 615 301 AA", "sku": "09.9772.1X", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Disc FRONT Golf V/VI/VII Jetta III/Passat/Tauran/Beetle", "fits": "VW Golf V/VI/VII, Jetta III, Passat, Touran, Beetle", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 44.98, "models": ["VW Golf V", "VW VI", "VW VII, Jetta III, Passat, Touran, Beetle"]}, {"sl": 207, "oe": "5C0 615 301 B", "sku": "09.9772.75", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Disc FRONT Golf V/VI/VII Jetta III/Passat/Tauran/Beetle", "fits": "VW Golf V/VI/VII, Jetta III, Passat, Touran, Beetle", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 40.792, "models": ["VW Golf V", "VW VI", "VW VII, Jetta III, Passat, Touran, Beetle"]}, {"sl": 208, "oe": "7L8 615 301 A", "sku": "09.9870.11", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Disc FRONT Touareg/Cayenne", "fits": "VW Touareg / Porsche Cayenne", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 51.786, "models": ["VW Touareg", "Porsche Cayenne"]}, {"sl": 209, "oe": "2H0 615 301 A", "sku": "09.B973.11", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Disc FRONT AMAROK", "fits": "VW Amarok (2H, 2010-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 35.034, "models": ["VW Amarok (2H, 2010-present)"]}, {"sl": 210, "oe": "4H0 615 601 P", "sku": "09.C170.11", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Disc REAR A6/A7/A8/S6", "fits": "Audi A6 / A7 / A8 / S6", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 35.557, "models": ["Audi A6", "Audi A7", "Audi A8", "Audi S6"]}, {"sl": 211, "oe": "4M0 615 301 AN", "sku": "09.D423.11", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Disc FRONT A5 L+R", "fits": "Audi A5 (8T, 2007-2016) - Left & Right", "unit": "PCS", "cat": "أقراص فرامل", "pos": "أمامي", "price": 56.498, "models": ["Audi A5 (8T, 2007-2016) - Left & Right"]}, {"sl": 212, "oe": "95B 615 601 D", "sku": "09.D940.11", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Disc REAR Macan", "fits": "Porsche Macan (95B, 2014-present)", "unit": "PCS", "cat": "أقراص فرامل", "pos": "خلفي", "price": 42.363, "models": ["Porsche Macan (95B, 2014-present)"]}, {"sl": 213, "oe": "7L0 907 637", "sku": "A00206", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Wear Sensor FRONT Touareg", "fits": "VW Touareg", "unit": "PCS", "cat": "حساسات فرامل", "pos": "أمامي", "price": 14.617, "models": ["VW Touareg"]}, {"sl": 214, "oe": "7L5 907 637 B", "sku": "A00346", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Wear Sensor FRONT Q7", "fits": "Audi Q7", "unit": "PCS", "cat": "حساسات فرامل", "pos": "أمامي", "price": 14.303, "models": ["Audi Q7"]}, {"sl": 215, "oe": "7P0 907 637 A", "sku": "A00451", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Wear Sensor FRONT Touareg", "fits": "VW Touareg", "unit": "SET", "cat": "حساسات فرامل", "pos": "أمامي", "price": 14.617, "models": ["VW Touareg"]}, {"sl": 216, "oe": "7P0 907 637 C", "sku": "A00452", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Wear Sensor REAR Touareg", "fits": "VW Touareg", "unit": "SET", "cat": "حساسات فرامل", "pos": "خلفي", "price": 14.303, "models": ["VW Touareg"]}, {"sl": 217, "oe": "7P0 907 637", "sku": "A00453", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Wear Sensor FRONT Touareg", "fits": "VW Touareg", "unit": "SET", "cat": "حساسات فرامل", "pos": "أمامي", "price": 14.094, "models": ["VW Touareg"]}, {"sl": 218, "oe": "8R0 615 121", "sku": "A00500", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Wear Sensor Q5", "fits": "Audi Q5", "unit": "SET", "cat": "حساسات فرامل", "pos": "", "price": 14.094, "models": ["Audi Q5"]}, {"sl": 219, "oe": "4G0 615 121 C", "sku": "A00530", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Wear Sensor FRONT A6", "fits": "Audi A6", "unit": "PCS", "cat": "حساسات فرامل", "pos": "أمامي", "price": 14.356, "models": ["Audi A6"]}, {"sl": 220, "oe": "5C0 698 151 A", "sku": "P61076", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Jetta IV", "fits": "VW Jetta IV (1999-2005)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 25.087, "models": ["VW Jetta IV (1999-2005)"]}, {"sl": 221, "oe": "7P0 698 151 B", "sku": "P65021", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Touareg", "fits": "VW Touareg", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 50.215, "models": ["VW Touareg"]}, {"sl": 222, "oe": "1H0 698 451 H", "sku": "P85017", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR A4/A6/Golf II/III", "fits": "Audi A4 / A6, VW Golf II/III", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 18.805, "models": ["Audi A4", "Audi A6, VW Golf II", "Audi III"]}, {"sl": 223, "oe": "4B0 698 151 A", "sku": "P85037", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A4", "fits": "Audi A4", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 24.564, "models": ["Audi A4"]}, {"sl": 224, "oe": "5C0 698 151", "sku": "P85041", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Golf IV", "fits": "VW Golf IV (1997-2006)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 20.376, "models": ["VW Golf IV (1997-2006)"]}, {"sl": 225, "oe": "JZW 698 151 G", "sku": "P85044", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A4", "fits": "Audi A4", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 23.517, "models": ["Audi A4"]}, {"sl": 226, "oe": "7L0 698 151 J", "sku": "P85065", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Touareg/Q7/Cayenne", "fits": "VW Touareg / Audi Q7 / Porsche Cayenne", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 40.269, "models": ["VW Touareg", "Audi Q7", "Porsche Cayenne"]}, {"sl": 227, "oe": "7L6 698 451", "sku": "P85068", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR TRANSPORTER T5", "fits": "VW Transporter T5 (2003-2015)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 26.134, "models": ["VW Transporter T5 (2003-2015)"]}, {"sl": 228, "oe": "7L0 698 451 G", "sku": "P85070", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR Touareg/Q7/Cayenne", "fits": "VW Touareg / Audi Q7 / Porsche Cayenne", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 26.134, "models": ["VW Touareg", "Audi Q7", "Porsche Cayenne"]}, {"sl": 229, "oe": "1K0 698 151 G", "sku": "P85072", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Golf VI/V/VI", "fits": "VW Golf V/VI (2003-2013)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 20.376, "models": ["VW Golf V", "VW VI (2003-2013)"]}, {"sl": 230, "oe": "7L6 698 151 B", "sku": "P85090", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Touareg", "fits": "VW Touareg", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 28.229, "models": ["VW Touareg"]}, {"sl": 231, "oe": "8E0 698 151 C", "sku": "P85097", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A4/A6/A8", "fits": "Audi A4 / A6 / A8", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 32.94, "models": ["Audi A4", "Audi A6", "Audi A8"]}, {"sl": 232, "oe": "8K0 698 151 E", "sku": "P85098", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A6/A7Q5", "fits": "Audi A6 / A7 / Q5", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 29.799, "models": ["Audi A6", "Audi A7", "Audi Q5"]}, {"sl": 233, "oe": "8K0 698 451 A", "sku": "P85099", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR A4/A5/Q5", "fits": "Audi A4 / A5 / Q5", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 21.947, "models": ["Audi A4", "Audi A5", "Audi Q5"]}, {"sl": 234, "oe": "8K0 698 451 D", "sku": "P85100", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR A4/A5/Q5", "fits": "Audi A4 / A5 / Q5", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 21.947, "models": ["Audi A4", "Audi A5", "Audi Q5"]}, {"sl": 235, "oe": "4E0 698 151 J", "sku": "P85102", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A8", "fits": "Audi A8", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 41.316, "models": ["Audi A8"]}, {"sl": 236, "oe": "3C0 698 451 C", "sku": "P85108", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR CC B7", "fits": "VW Passat CC (B7, 2012-2017)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 22.47, "models": ["VW Passat CC (B7, 2012-2017)"]}, {"sl": 237, "oe": "5N0 698 451", "sku": "P85109", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR Q3/Passat/Tiguan", "fits": "Audi Q3 / VW Passat / Tiguan", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 24.041, "models": ["Audi Q3", "VW Passat", "VW Tiguan"]}, {"sl": 238, "oe": "7L6 698 451 B", "sku": "P85111", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR Touareg", "fits": "VW Touareg", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 28.752, "models": ["VW Touareg"]}, {"sl": 239, "oe": "5N0 698 151 A", "sku": "P85112", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Q3/Tiguan", "fits": "Audi Q3 / VW Tiguan", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 25.611, "models": ["Audi Q3", "VW Tiguan"]}, {"sl": 240, "oe": "8K0 698 151 F", "sku": "P85113", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A4/A5", "fits": "Audi A4 / A5", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 28.229, "models": ["Audi A4", "Audi A5"]}, {"sl": 241, "oe": "2H0 698 151 A", "sku": "P85115", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Amarok", "fits": "VW Amarok (2H, 2010-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 28.752, "models": ["VW Amarok (2H, 2010-present)"]}, {"sl": 242, "oe": "4H0 698 451 L", "sku": "P85117", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR A8", "fits": "Audi A8", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 27.705, "models": ["Audi A8"]}, {"sl": 243, "oe": "4H0 698 451 D", "sku": "P85120", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR A8", "fits": "Audi A8", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 26.134, "models": ["Audi A8"]}, {"sl": 244, "oe": "8R0 698 151 C", "sku": "P85123", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A6/A7/Q5/Macan", "fits": "Audi A6 / A7 / Q5 / Porsche Macan", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 27.705, "models": ["Audi A6", "Audi A7", "Audi Q5", "Porsche Macan"]}, {"sl": 245, "oe": "4G0 698 151 G", "sku": "P85127", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A6/A7/A8", "fits": "Audi A6 / A7 / A8", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 36.081, "models": ["Audi A6", "Audi A7", "Audi A8"]}, {"sl": 246, "oe": "5Q0 698 151 AG", "sku": "P85144", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Golf VII", "fits": "VW Golf VII (2012-2020)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 31.369, "models": ["VW Golf VII (2012-2020)"]}, {"sl": 247, "oe": "4G0 698 151 AA", "sku": "P85145", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A6/A7Q5", "fits": "Audi A6 / A7 / Q5", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 33.987, "models": ["Audi A6", "Audi A7", "Audi Q5"]}, {"sl": 248, "oe": "5QD 698 151", "sku": "P85147", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT ARTEON", "fits": "VW Arteon (2017-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 28.752, "models": ["VW Arteon (2017-present)"]}, {"sl": 249, "oe": "7L6 698 151 F", "sku": "P85149", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Touareg/Cayenne", "fits": "VW Touareg / Porsche Cayenne", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 36.605, "models": ["VW Touareg", "Porsche Cayenne"]}, {"sl": 250, "oe": "4H0 698 451 Q", "sku": "P85151", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR A6/A7/A8", "fits": "Audi A6 / A7 / A8", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 32.94, "models": ["Audi A6", "Audi A7", "Audi A8"]}, {"sl": 251, "oe": "8U0 698 151 J", "sku": "P85152", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A3", "fits": "Audi A3", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 36.605, "models": ["Audi A3"]}, {"sl": 252, "oe": "8W0 698 451 F", "sku": "P85154", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR Q7/A4/A5", "fits": "Audi Q7 / A4 / A5", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 28.229, "models": ["Audi Q7", "Audi A4", "Audi A5"]}, {"sl": 253, "oe": "8J0 698 151 M", "sku": "P85159", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT TT/Roadster", "fits": "Audi TT / TT Roadster", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 32.94, "models": ["Audi TT", "Audi TT Roadster"]}, {"sl": 254, "oe": "4M0 698 451 BN", "sku": "P85161", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR Q7", "fits": "Audi Q7", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 27.705, "models": ["Audi Q7"]}, {"sl": 255, "oe": "8V0 698 451 E", "sku": "P85162", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR A3", "fits": "Audi A3", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 25.611, "models": ["Audi A3"]}, {"sl": 256, "oe": "4M0 698 151 AP", "sku": "P85165", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT A5/Q7", "fits": "Audi A5 / Q7", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 38.175, "models": ["Audi A5", "Audi Q7"]}, {"sl": 257, "oe": "4M0 698 151 AH", "sku": "P85170", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Q7/Q8", "fits": "Audi Q7 / Q8", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 40.269, "models": ["Audi Q7", "Audi Q8"]}, {"sl": 258, "oe": "2H6 698 451 A", "sku": "P85172", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR AMAROK", "fits": "VW Amarok (2H, 2010-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 31.369, "models": ["VW Amarok (2H, 2010-present)"]}, {"sl": 259, "oe": "2H6 698 151 A", "sku": "P85173", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT AMAROK", "fits": "VW Amarok (2H, 2010-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 40.269, "models": ["VW Amarok (2H, 2010-present)"]}, {"sl": 260, "oe": "3QF 698 151 E", "sku": "P85176", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Teramont / Atlas", "fits": "VW Teramont / Atlas (2017-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 35.034, "models": ["VW Teramont", "VW Atlas (2017-present)"]}, {"sl": 261, "oe": "80A 698 151 B", "sku": "P85181", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Q5", "fits": "Audi Q5", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 57.021, "models": ["Audi Q5"]}, {"sl": 262, "oe": "5WA 698 151 P", "sku": "P85182", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Golf VIII", "fits": "VW Golf VIII (2019-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 43.41, "models": ["VW Golf VIII (2019-present)"]}, {"sl": 263, "oe": "5WA 698 151 Q", "sku": "P85182X", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad FRONT Golf VIII", "fits": "VW Golf VIII (2019-present)", "unit": "SET", "cat": "أقمشة فرامل", "pos": "أمامي", "price": 68.014, "models": ["VW Golf VIII (2019-present)"]}, {"sl": 264, "oe": "8W0 698 451 AC", "sku": "P85186", "brand": "VW | AUDI", "brand_ar": "فولكس فاجن / أودي", "desc": "Brake Pad REAR A4", "fits": "Audi A4", "unit": "SET", "cat": "أقمشة فرامل", "pos": "خلفي", "price": 43.41, "models": ["Audi A4"]}];
+const GOVERNORATES = {"مسقط": ["مسقط", "مطرح", "بوشر", "السيب", "العامرات", "قريات"], "ظفار": ["صلالة", "طاقة", "مرباط", "سدح", "ضلكوت", "رخيوت", "مقشن", "شليم وجزر الحلانيات", "ثمريت", "محوت"], "مسندم": ["خصب", "بخا", "دبا البيعة", "مدحاء"], "البريمي": ["البريمي", "محضة", "السنينة"], "الداخلية": ["نزوى", "بهلاء", "منح", "الحمراء", "أدم", "إزكي", "سمائل", "بدبد"], "شمال الباطنة": ["صحار", "شناص", "لوى", "صحم", "الخابورة", "السويق"], "جنوب الباطنة": ["الرستاق", "العوابي", "نخل", "وادي المعاول", "بركاء", "المصنعة"], "الظاهرة": ["عبري", "ينقل", "ضنك"], "شمال الشرقية": ["إبراء", "المضيبي", "بدية", "القابل", "وادي بني خالد", "دماء والطائيين"], "جنوب الشرقية": ["صور", "الكامل والوافي", "جعلان بني بو علي", "جعلان بني بو حسن", "مصيرة"], "الوسطى": ["هيماء", "محوت", "الدقم", "الجازر"]};
+const DELIVERY_FEE = 2.000;
+let cart = {};
+
+function fmt(n){ return n.toLocaleString('en-US', {minimumFractionDigits:3, maximumFractionDigits:3}); }
+
+const cats = [...new Set(ITEMS.map(i=>i.cat))];
+const brands = [...new Set(ITEMS.map(i=>i.brand_ar))].sort();
+document.getElementById('statBrands').dataset.target = brands.length;
+document.getElementById('statCount').dataset.target = ITEMS.length;
+
+function animateCounters(){
+  document.querySelectorAll('.hero-stats b[data-target]').forEach(el=>{
+    const target = parseFloat(el.dataset.target);
+    const isDecimal = el.id === 'statDelivery';
+    const dur = 1100;
+    const start = performance.now();
+    function tick(now){
+      const p = Math.min(1, (now-start)/dur);
+      const eased = 1 - Math.pow(1-p, 3);
+      const val = target * eased;
+      el.textContent = isDecimal ? val.toFixed(3) : Math.round(val).toLocaleString('en-US');
+      if(p<1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+requestAnimationFrame(()=>setTimeout(animateCounters, 550));
+
+// category pills
+const catFilters = document.getElementById('catFilters');
+let activeCat = '';
+function renderCatPills(){
+  catFilters.innerHTML = '';
+  const allPill = document.createElement('button');
+  allPill.className = 'pill' + (activeCat===''?' active':'');
+  allPill.textContent = 'الكل';
+  allPill.onclick = ()=>{activeCat=''; renderCatPills(); renderGrid();};
+  catFilters.appendChild(allPill);
+  cats.forEach(c=>{
+    const p = document.createElement('button');
+    p.className = 'pill' + (activeCat===c?' active':'');
+    p.textContent = c;
+    p.onclick = ()=>{activeCat=c; renderCatPills(); renderGrid();};
+    catFilters.appendChild(p);
+  });
+}
+renderCatPills();
+
+// position pills
+const posFilters = document.getElementById('posFilters');
+let activePos = '';
+function renderPosPills(){
+  posFilters.innerHTML = '';
+  ['', 'أمامي', 'خلفي'].forEach(p=>{
+    const btn = document.createElement('button');
+    btn.className = 'pill small' + (activePos===p?' active':'');
+    btn.textContent = p===''?'الكل':p;
+    btn.onclick = ()=>{activePos=p; renderPosPills(); renderGrid();};
+    posFilters.appendChild(btn);
+  });
+}
+renderPosPills();
+
+const brandSel = document.getElementById('brandFilter');
+brands.forEach(b=>{
+  const o = document.createElement('option'); o.value=b; o.textContent=b;
+  brandSel.appendChild(o);
+});
+
+const modelSel = document.getElementById('modelFilter');
+function populateModels(){
+  const b = brandSel.value;
+  modelSel.innerHTML = '<option value="">كل الموديلات</option>';
+  if(!b){ return; }
+  const modelSet = new Set();
+  ITEMS.filter(i=>i.brand_ar===b).forEach(i=>{
+    (i.models||[]).forEach(m=>modelSet.add(m));
+  });
+  [...modelSet].sort().forEach(m=>{
+    const o = document.createElement('option'); o.value=m; o.textContent=m;
+    modelSel.appendChild(o);
+  });
+}
+populateModels();
+brandSel.addEventListener('change', ()=>{ populateModels(); renderGrid(); });
+
+const searchInput = document.getElementById('searchInput');
+const sortSel = document.getElementById('sortFilter');
+[modelSel, sortSel].forEach(el=>el.addEventListener('change', renderGrid));
+searchInput.addEventListener('input', debounce(renderGrid, 150));
+function debounce(fn, ms){let t; return (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a), ms);};}
+
+function renderGrid(){
+  const q = searchInput.value.trim().toLowerCase();
+  const b = brandSel.value;
+  const mdl = modelSel.value;
+  const sort = sortSel.value;
+
+  let list = ITEMS.filter(i=>{
+    if(activeCat && i.cat !== activeCat) return false;
+    if(activePos && i.pos !== activePos) return false;
+    if(b && i.brand_ar !== b) return false;
+    if(mdl && !(i.models||[]).includes(mdl)) return false;
+    if(q){
+      const hay = (i.desc+' '+i.oe+' '+i.sku+' '+i.brand+' '+i.brand_ar+' '+i.fits+' '+(i.models||[]).join(' ')).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if(sort==='price-asc') list.sort((a,c)=>a.price-c.price);
+  if(sort==='price-desc') list.sort((a,c)=>c.price-a.price);
+
+  document.getElementById('resultCount').textContent = list.length + ' نتيجة';
+
+  const grid = document.getElementById('productGrid');
+  if(list.length===0){
+    grid.innerHTML = '<div class="empty-state">لا توجد منتجات مطابقة لبحثك. جرّب كلمة أخرى.</div>';
+    return;
+  }
+  grid.innerHTML = list.map(i=>`
+    <div class="card">
+      <div class="card-top">
+        <span class="brand-tag">${i.brand_ar}</span>
+        <div class="tag-row">
+          <span class="cat-tag">${i.cat}</span>
+          ${i.pos ? `<span class="pos-tag ${i.pos==='أمامي'?'front':'rear'}">${i.pos}</span>` : ''}
+        </div>
+      </div>
+      <h3>${i.cat}${i.pos ? ' ' + i.pos : ''}</h3>
+      <div class="fits-line">يركب على: <b>${i.fits || '—'}</b></div>
+      <div class="oe">رقم القطعة الأصلي (OE): ${i.oe || '—'}</div>
+      <div class="sku">رمز المنتج (SKU): ${i.sku}</div>
+      <div class="disclaimer">⚠️ يرجى التأكد من رقم القطعة قبل الطلب للتأكد من توافقها مع سيارتك بدقة.</div>
+      <div class="card-bottom">
+        <div class="price">${fmt(i.price)}<small> ر.ع / ${i.unit==='SET'?'طقم':'قطعة'}</small></div>
+        <button class="add-btn" onclick="addToCart('${i.sku}', this)">أضف للسلة</button>
+      </div>
+    </div>
+  `).join('');
+  if(typeof revealCards === 'function') revealCards();
+}
+
+function addToCart(sku, btn){
+  cart[sku] = (cart[sku]||0) + 1;
+  updateCartCount();
+  if(btn){
+    btn.textContent = 'تمت الإضافة ✓';
+    btn.classList.add('added');
+    setTimeout(()=>{btn.textContent='أضف للسلة'; btn.classList.remove('added');}, 1200);
+  }
+  const item = ITEMS.find(i=>i.sku===sku);
+  if(item && typeof showToast === 'function') showToast(`أُضيف: ${item.brand_ar} — ${item.cat}${item.pos?' '+item.pos:''}`);
+  renderCart();
+}
+function updateCartCount(){
+  const total = Object.values(cart).reduce((a,b)=>a+b,0);
+  const el = document.getElementById('cartCount');
+  el.textContent = total;
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+}
+function openCart(){document.getElementById('overlay').classList.add('open'); document.getElementById('drawer').classList.add('open'); renderCart();}
+function closeCart(){document.getElementById('overlay').classList.remove('open'); document.getElementById('drawer').classList.remove('open');}
+function changeQty(sku, delta){cart[sku]=(cart[sku]||0)+delta; if(cart[sku]<=0) delete cart[sku]; updateCartCount(); renderCart();}
+function removeItem(sku){delete cart[sku]; updateCartCount(); renderCart();}
+
+function renderCart(){
+  const body = document.getElementById('cartBody');
+  const foot = document.getElementById('cartFoot');
+  const skus = Object.keys(cart);
+  if(skus.length===0){
+    body.innerHTML = '<div class="cart-empty">سلتك فارغة حالياً.<br>تصفح المنتجات وأضف ما تحتاجه.</div>';
+    foot.innerHTML = '';
+    return;
+  }
+  let subtotal = 0;
+  body.innerHTML = skus.map(sku=>{
+    const item = ITEMS.find(i=>i.sku===sku);
+    if(!item) return '';
+    const lineTotal = item.price * cart[sku];
+    subtotal += lineTotal;
+    return `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <h4>${item.brand_ar} — ${item.cat}${item.pos?' '+item.pos:''}</h4>
+          <div class="oe">${item.fits} · SKU ${item.sku}</div>
+          <div class="qty-controls">
+            <button onclick="changeQty('${sku}', -1)">−</button>
+            <span>${cart[sku]}</span>
+            <button onclick="changeQty('${sku}', 1)">+</button>
+            <span class="remove-link" onclick="removeItem('${sku}')">حذف</span>
+          </div>
+        </div>
+        <div class="line-price">${fmt(lineTotal)}</div>
+      </div>
+    `;
+  }).join('');
+
+  const total = subtotal + DELIVERY_FEE;
+  foot.innerHTML = `
+    <div class="sum-row"><span>المجموع الفرعي</span><span>${fmt(subtotal)} ر.ع</span></div>
+    <div class="sum-row"><span>رسوم التوصيل</span><span>${fmt(DELIVERY_FEE)} ر.ع</span></div>
+    <div class="sum-row total"><span>الإجمالي</span><span>${fmt(total)} ر.ع</span></div>
+    <button class="checkout-btn" onclick="openCheckoutModal()">متابعة الطلب</button>
+  `;
+}
+
+// ---------- checkout modal / governorates ----------
+const govSel = document.getElementById('custGov');
+const wilSel = document.getElementById('custWilayat');
+Object.keys(GOVERNORATES).forEach(g=>{
+  const o = document.createElement('option'); o.value=g; o.textContent=g;
+  govSel.appendChild(o);
+});
+function populateWilayat(){
+  const g = govSel.value;
+  wilSel.innerHTML = '';
+  (GOVERNORATES[g]||[]).forEach(w=>{
+    const o = document.createElement('option'); o.value=w; o.textContent=w;
+    wilSel.appendChild(o);
+  });
+}
+govSel.addEventListener('change', populateWilayat);
+populateWilayat();
+
+function openCheckoutModal(){
+  if(Object.keys(cart).length===0) return;
+  document.getElementById('checkoutModal').classList.add('open');
+}
+function closeCheckoutModal(){
+  document.getElementById('checkoutModal').classList.remove('open');
+}
+
+// ---------- payment method ----------
+let paymentMethod = 'card';
+let applePayConfirmed = false;
+
+function selectPayment(method){
+  paymentMethod = method;
+  document.getElementById('payCardBtn').classList.toggle('active', method==='card');
+  document.getElementById('payAppleBtn').classList.toggle('active', method==='applepay');
+  document.getElementById('cardFields').style.display = method==='card' ? 'flex' : 'none';
+  document.getElementById('applePayFields').style.display = method==='applepay' ? 'flex' : 'none';
+}
+
+function markApplePayReady(){
+  applePayConfirmed = true;
+  const btn = document.getElementById('applePayFields').querySelector('.apple-pay-btn');
+  btn.textContent = '✓ جاهز للدفع عبر Apple Pay';
+  btn.classList.add('confirmed');
+  document.getElementById('errApple').classList.remove('show');
+}
+
+document.getElementById('cardNumber').addEventListener('input', function(e){
+  let v = e.target.value.replace(/\D/g,'').slice(0,16);
+  e.target.value = v.replace(/(.{4})/g,'$1 ').trim();
+});
+document.getElementById('cardExpiry').addEventListener('input', function(e){
+  let v = e.target.value.replace(/\D/g,'').slice(0,4);
+  if(v.length>=3) v = v.slice(0,2)+'/'+v.slice(2);
+  e.target.value = v;
+});
+document.getElementById('cardCvv').addEventListener('input', function(e){
+  e.target.value = e.target.value.replace(/\D/g,'').slice(0,4);
+});
+
+function submitCheckout(){
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const gov = govSel.value;
+  const wil = wilSel.value;
+
+  let valid = true;
+  const nameErr = document.getElementById('errName');
+  const phoneErr = document.getElementById('errPhone');
+  nameErr.classList.remove('show');
+  phoneErr.classList.remove('show');
+
+  if(!name){ nameErr.classList.add('show'); valid = false; }
+  if(!/^[79]\d{7}$/.test(phone)){ phoneErr.classList.add('show'); valid = false; }
+
+  let paymentSummary = '';
+  if(paymentMethod === 'card'){
+    const cardName = document.getElementById('cardName').value.trim();
+    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g,'');
+    const cardExpiry = document.getElementById('cardExpiry').value.trim();
+    const cardCvv = document.getElementById('cardCvv').value.trim();
+    const cardErr = document.getElementById('errCard');
+    cardErr.classList.remove('show');
+    if(!cardName || cardNumber.length<12 || !/^\d{2}\/\d{2}$/.test(cardExpiry) || cardCvv.length<3){
+      cardErr.classList.add('show'); valid = false;
+    } else {
+      paymentSummary = `بطاقة بنكية (تنتهي بـ ${cardNumber.slice(-4)})`;
+    }
+  } else {
+    const appleErr = document.getElementById('errApple');
+    appleErr.classList.remove('show');
+    if(!applePayConfirmed){
+      appleErr.classList.add('show'); valid = false;
+    } else {
+      paymentSummary = 'Apple Pay';
+    }
+  }
+
+  if(!valid) return;
+
+  const skus = Object.keys(cart);
+  let msg = `مرحباً، أرغب بطلب القطع التالية:%0A%0A`;
+  let subtotal = 0;
+  skus.forEach(sku=>{
+    const item = ITEMS.find(i=>i.sku===sku);
+    const qty = cart[sku];
+    const lineTotal = item.price * qty;
+    subtotal += lineTotal;
+    msg += `- ${item.brand_ar} | ${item.cat}${item.pos?' '+item.pos:''} | ${item.fits} (SKU ${item.sku}) × ${qty} = ${fmt(lineTotal)} ر.ع%0A`;
+  });
+  const total = subtotal + DELIVERY_FEE;
+  msg += `%0Aالتوصيل: ${fmt(DELIVERY_FEE)} ر.ع%0Aالإجمالي: ${fmt(total)} ر.ع`;
+  msg += `%0A%0A--- بيانات التوصيل ---%0Aالاسم: ${encodeURIComponent(name)}%0Aالهاتف: +968 ${phone}%0Aالمحافظة: ${encodeURIComponent(gov)}%0Aالولاية: ${encodeURIComponent(wil)}`;
+  msg += `%0A%0Aطريقة الدفع المطلوبة: ${encodeURIComponent(paymentSummary)}%0A(بانتظار رابط دفع آمن من المتجر لإتمام العملية فعلياً)`;
+
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+  closeCheckoutModal();
+}
+
+renderGrid();
+
+// ---------- header scroll shadow ----------
+const headerEl = document.querySelector('header');
+window.addEventListener('scroll', ()=>{
+  headerEl.classList.toggle('scrolled', window.scrollY > 10);
+}, {passive:true});
+
+// ---------- toast notifications ----------
+const toastHost = document.createElement('div');
+toastHost.className = 'toast-host';
+document.body.appendChild(toastHost);
+function showToast(text){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = text;
+  toastHost.appendChild(t);
+  setTimeout(()=>{ t.style.animation = 'toastOut .3s ease forwards'; setTimeout(()=>t.remove(), 300); }, 1800);
+}
+
+// ---------- ripple effect on interactive buttons ----------
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.add-btn, .cart-btn, .checkout-btn, .pill, .apple-pay-btn, .pay-opt');
+  if(!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  const size = Math.max(rect.width, rect.height);
+  ripple.className = 'ripple';
+  ripple.style.width = ripple.style.height = size+'px';
+  ripple.style.left = (e.clientX - rect.left - size/2)+'px';
+  ripple.style.top = (e.clientY - rect.top - size/2)+'px';
+  btn.appendChild(ripple);
+  setTimeout(()=>ripple.remove(), 600);
+});
+
+// ---------- reveal cards on render ----------
+function revealCards(){
+  const cards = document.querySelectorAll('#productGrid .card');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.style.animationDelay = (Math.random()*0.15).toFixed(2)+'s';
+        entry.target.classList.add('reveal');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold:.1});
+  cards.forEach(c=>io.observe(c));
+}
+revealCards();
+</script>
+</body>
+</html>
