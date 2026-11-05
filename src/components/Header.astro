@@ -1,0 +1,80 @@
+---
+import Icon from './Icon.astro';
+import LogoMark from './LogoMark.astro';
+import { lp, t } from '../lib/i18n.ts';
+import type { Lang } from '../lib/catalog.ts';
+import { STORE } from '../data/store.ts';
+
+interface Props { lang: Lang; altHref: string; current?: string }
+const { lang, altHref, current } = Astro.props;
+const other: Lang = lang === 'ar' ? 'en' : 'ar';
+const nav = [
+  { href: lp(lang, '/shop/'), label: t(lang, 'navShop'), key: 'shop' },
+  { href: lp(lang, '/vehicles/'), label: t(lang, 'navVehicles'), key: 'vehicles' },
+  { href: lp(lang, '/delivery/'), label: t(lang, 'navDelivery'), key: 'delivery' },
+  { href: lp(lang, '/fitment/'), label: t(lang, 'navFitment'), key: 'fitment' },
+];
+const searchForm = (id: string) => ({ id });
+---
+<div class="topbar">
+  <div class="wrap">
+    <span>{t(lang, 'deliveryLine')}</span>
+    <span class="sep hide-sm">·</span>
+    <span class="hide-sm">{t(lang, 'codLine')}</span>
+    <span class="sep hide-sm">·</span>
+    <a class="hide-sm" href={`https://wa.me/${STORE.whatsapp}`} target="_blank" rel="noopener noreferrer">{t(lang, 'whatsapp')} <span class="ltr">{STORE.whatsappDisplay}</span></a>
+  </div>
+</div>
+<header class="site-header" id="top">
+  <div class="wrap">
+    <div class="header-row">
+      <button class="icon-btn menu-btn" type="button" data-open-nav aria-label={t(lang, 'menu')} aria-controls="nav-panel" aria-expanded="false"><Icon name="menu" /></button>
+      <a href={lp(lang, '/')} class="logo" aria-label={`${STORE.name} — ${t(lang, 'home')}`}>
+        <LogoMark class="logo-mark" />
+        <span><span class="logo-word">BREMBO <b>OMAN</b></span><span class="logo-sub">{t(lang, 'brandTag')}</span></span>
+      </a>
+      <nav class="main-nav" aria-label={t(lang, 'menu')}>
+        {nav.map((n) => <a href={n.href} aria-current={current === n.key ? 'page' : undefined} data-astro-prefetch>{n.label}</a>)}
+      </nav>
+      {[searchForm('q-desktop')].map(({ id }) => (
+        <form class="search" role="search" action={lp(lang, '/shop/')} method="get" data-search>
+          <label class="sr-only" for={id}>{t(lang, 'searchLabel')}</label>
+          <Icon name="search" class="search-icon" />
+          <input class="input" id={id} name="q" type="search" placeholder={t(lang, 'searchPh')} autocomplete="off" enterkeyhint="search" spellcheck="false" maxlength="80" aria-autocomplete="list" aria-expanded="false" />
+          <div class="suggest" role="listbox" hidden></div>
+        </form>
+      ))}
+      <div class="header-actions">
+        <a class="icon-btn lang-switch" href={altHref} hreflang={other} lang={other} data-lang-switch><Icon name="globe" /><span class="lbl">{t(lang, 'langName')}</span><span class="sr-only">{t(lang, 'langSwitch')}</span></a>
+        <button class="icon-btn cart-btn" type="button" data-open-cart aria-controls="cart-drawer" aria-expanded="false">
+          <Icon name="cart" /><span class="lbl">{t(lang, 'cart')}</span>
+          <span class="cart-count" data-cart-count aria-live="polite">0</span>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-search">
+      {[searchForm('q-mobile')].map(({ id }) => (
+        <form class="search" role="search" action={lp(lang, '/shop/')} method="get" data-search>
+          <label class="sr-only" for={id}>{t(lang, 'searchLabel')}</label>
+          <Icon name="search" class="search-icon" />
+          <input class="input" id={id} name="q" type="search" placeholder={t(lang, 'searchPh')} autocomplete="off" enterkeyhint="search" spellcheck="false" maxlength="80" aria-autocomplete="list" aria-expanded="false" />
+          <div class="suggest" role="listbox" hidden></div>
+        </form>
+      ))}
+    </div>
+  </div>
+</header>
+
+<div class="nav-panel" id="nav-panel" role="dialog" aria-modal="true" aria-label={t(lang, 'menu')} data-nav-panel>
+  <div class="nav-panel-head">
+    <a href={lp(lang, '/')} class="logo"><LogoMark class="logo-mark" /><span class="logo-word">BREMBO <b>OMAN</b></span></a>
+    <button class="icon-btn" type="button" data-close-nav aria-label={t(lang, 'close')}><Icon name="close" /></button>
+  </div>
+  <nav aria-label={t(lang, 'menu')}>
+    {nav.map((n, i) => <a href={n.href}>{n.label}<small>0{i + 1}</small></a>)}
+  </nav>
+  <div class="sub">
+    <a class="btn btn-wa btn-block" href={`https://wa.me/${STORE.whatsapp}`} target="_blank" rel="noopener noreferrer"><Icon name="wa" />{t(lang, 'whatsapp')} <span class="ltr">{STORE.whatsappDisplay}</span></a>
+    <a class="btn btn-outline-light btn-block" href={altHref} hreflang={other} lang={other} data-lang-switch><Icon name="globe" />{t(lang, 'langSwitch')}</a>
+  </div>
+</div>

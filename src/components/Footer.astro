@@ -1,0 +1,46 @@
+---
+import LogoMark from './LogoMark.astro';
+import { lp, t } from '../lib/i18n.ts';
+import { CATEGORIES, type Lang } from '../lib/catalog.ts';
+import { STORE } from '../data/store.ts';
+interface Props { lang: Lang; altHref: string }
+const { lang, altHref } = Astro.props;
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a href={lp(lang, '/')} class="logo"><LogoMark class="logo-mark" /><span class="logo-word">BREMBO <b>OMAN</b></span></a>
+        <p>{t(lang, 'footerAbout')}</p>
+        <p>{t(lang, 'footerPrices')} {t(lang, 'footerDelivery')}</p>
+      </div>
+      <div>
+        <h2>{t(lang, 'footerShop')}</h2>
+        <ul>
+          {CATEGORIES.map((c) => <li><a href={lp(lang, `/shop/${c.id}/`)}>{lang === 'ar' ? c.ar : c.en}</a></li>)}
+          <li><a href={lp(lang, '/vehicles/')}>{t(lang, 'navVehicles')}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>{t(lang, 'footerHelp')}</h2>
+        <ul>
+          <li><a href={lp(lang, '/delivery/')}>{t(lang, 'navDelivery')}</a></li>
+          <li><a href={lp(lang, '/fitment/')}>{t(lang, 'navFitment')}</a></li>
+          <li><a href={altHref} hreflang={lang === 'ar' ? 'en' : 'ar'} data-lang-switch>{t(lang, 'langSwitch')}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>{t(lang, 'footerContact')}</h2>
+        <ul>
+          <li><a href={`https://wa.me/${STORE.whatsapp}`} target="_blank" rel="noopener noreferrer">{t(lang, 'whatsapp')}: <span class="ltr">{STORE.whatsappDisplay}</span></a></li>
+          <li><a href={`tel:+${STORE.whatsapp}`}><span class="ltr">{STORE.whatsappDisplay}</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-base">
+      <span>© {year} {STORE.name}. {t(lang, 'rights')}</span>
+      <span>{t(lang, 'trademark')}</span>
+    </div>
+  </div>
+</footer>

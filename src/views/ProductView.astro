@@ -1,0 +1,152 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Icon from '../components/Icon.astro';
+import { lp, t } from '../lib/i18n.ts';
+import { CAT_BY_ID, complementary, related, type Lang, type Product } from '../lib/catalog.ts';
+import { MAKES } from '../lib/fitment.ts';
+import { cdn } from '../lib/media.ts';
+import { breadcrumbLd, productLd } from '../lib/seo.ts';
+import { STORE, formatBaisa } from '../data/store.ts';
+
+interface Props { lang: Lang; p: Product }
+const { lang, p } = Astro.props;
+const ar = lang === 'ar';
+const cat = CAT_BY_ID.get(p.category)!;
+const catName = ar ? cat.ar : cat.en;
+const unit = p.unit === 'SET' ? t(lang, 'set') : t(lang, 'piece');
+const comp = complementary(p, 8);
+const rel = related(p, 8, new Set(comp.map((x) => x.sku)));
+const crumbs = [
+  { name: t(lang, 'home'), href: lp(lang, '/') },
+  { name: catName, href: lp(lang, `/shop/${cat.id}/`) },
+  { name: p.sku, href: lp(lang, `/p/${p.slug}/`) },
+];
+const posTxt = p.position ? t(lang, p.position) : null;
+const title = ar
+  ? `${p.name.ar} بريمبو ${p.sku}${p.category !== 'brake-fluid' ? ` — ${p.fits}` : ''}`
+  : `Brembo ${p.sku} ${p.name.en}${p.category !== 'brake-fluid' ? ` — ${p.fits}` : ''}`;
+const description = ar
+  ? `${p.name.ar} بريمبو رقم ${p.sku}${p.oe && p.oe !== p.sku ? ` (OE ${p.oe})` : ''}${p.category !== 'brake-fluid' ? ` لـ ${p.fits}` : ''}. السعر ${formatBaisa(p.priceBaisa)} ر.ع ${p.unit === 'SET' ? 'للطقم' : 'للقطعة'}. توصيل لجميع محافظات عُمان.`
+  : `Brembo ${p.sku} ${p.name.en}${p.oe && p.oe !== p.sku ? ` (OE ${p.oe})` : ''}${p.category !== 'brake-fluid' ? ` for ${p.fits}` : ''}. ${formatBaisa(p.priceBaisa)} OMR per ${p.unit === 'SET' ? 'set' : 'piece'}. Delivery across Oman.`;
+const askText = `${t(lang, 'askFitmentMsg')}\n${p.sku}${p.oe && p.oe !== p.sku ? ` / OE ${p.oe}` : ''}\n${p.fits}\n${ar ? 'رقم الشاصي (VIN):' : 'VIN:'} `;
+const alt = `${p.title[lang]}${p.imageIsRepresentative ? ` — ${t(lang, 'representative')}` : ''}`;
+const yearTxt = (f: Product['fitment'][number]) => f.yearFrom == null ? null : `${f.yearFrom}–${f.present ? t(lang, 'present') : f.yearTo}`;
+---
+<Layout lang={lang} title={title} description={description} path={`/p/${p.slug}/`} type="product" image={cdn(p.image, 1200)} current="shop" bodyClass="has-buybar" jsonLd={[productLd(p, lang), breadcrumbLd(crumbs)]}>
+  <div class="wrap">
+    <ol class="crumbs" style="margin-top:20px">{crumbs.map((c, i) => <li>{i < crumbs.length - 1 ? <a href={c.href}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>)}</ol>
+
+    <div class="pdp">
+      <div class="pdp-media">
+        <span class="ruler" aria-hidden="true"></span>
+        <img src={cdn(p.image, 800)} srcset={`${cdn(p.image, 480)} 480w, ${cdn(p.image, 800)} 800w, ${cdn(p.image, 1200)} 1200w`} sizes="(max-width: 860px) 92vw, 50vw" width="800" height="800" alt={alt} fetchpriority="high" decoding="async" data-fallback={cat.id} />
+        {p.imageIsRepresentative && <span class="rep-note">{t(lang, 'representative')}</span>}
+      </div>
+
+      <div class="pdp-info">
+        <div class="pdp-chips">
+          <span class="chip chip-dot">Brembo</span>
+          <a class="chip" href={lp(lang, `/shop/${cat.id}/`)}>{catName}</a>
+          {posTxt && <span class={`chip chip-${p.position}`}>{posTxt}</span>}
+          <span class="chip">{unit}</span>
+        </div>
+        <h1>{p.name[lang]} <span class="mono" style="color:var(--steel);font-weight:500">{p.sku}</span></h1>
+        {p.category !== 'brake-fluid' && <p class="vehicle">{p.fits}</p>}
+
+        <dl class="pn-table">
+          <dt>{t(lang, 'sku')}</dt><dd>{p.sku}</dd>
+          {p.oe && p.oe !== p.sku && <><dt>{t(lang, 'oe')}</dt><dd>{p.oe}</dd></>}
+        </dl>
+
+        <div class="pdp-buy">
+          <div class="pdp-price"><b>{formatBaisa(p.priceBaisa)}</b><span>{t(lang, 'omr')} / {unit}</span></div>
+          {p.category === 'brake-discs' && <p class="flag"><Icon name="info" />{ar ? 'السعر للقرص الواحد. تُستبدل الأقراص عادةً كزوج على نفس المحور (الكمية 2).' : 'Price is per disc. Discs are normally replaced in pairs on the same axle (quantity 2).'}</p>}
+          {p.hasUnclearFitment && <p class="flag"><Icon name="alert" />{t(lang, 'compatUnclear')}</p>}
+          <div class="buy-row">
+            <div class="stepper">
+              <button type="button" data-step="-1" aria-label={t(lang, 'decrease')}><Icon name="minus" /></button>
+              <input id="qty" type="number" inputmode="numeric" min="1" max={STORE.maxQtyPerLine} value={p.category === 'brake-discs' ? 2 : 1} aria-label={t(lang, 'qty')} />
+              <button type="button" data-step="1" aria-label={t(lang, 'increase')}><Icon name="plus" /></button>
+            </div>
+            <button class="btn btn-red btn-lg" type="button" data-add={p.sku} data-qty-from="#qty" id="main-add"><Icon name="cart" /><span class="lbl">{t(lang, 'addToCart')}</span></button>
+          </div>
+          <a class="btn btn-ghost btn-block" href={`https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(askText)}`} target="_blank" rel="noopener noreferrer"><Icon name="wa" />{t(lang, 'askFitment')}</a>
+          <ul class="trust">
+            <li><Icon name="truck" />{t(lang, 'deliveryLine')}</li>
+            <li><Icon name="cash" />{t(lang, 'codLine')}</li>
+            <li><Icon name="shield" />{t(lang, 'verifyLine')}{p.oe && p.oe !== p.sku ? <> — <span class="mono ltr">{p.oe}</span></> : null}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="pdp-sections">
+      <section aria-labelledby="h-desc">
+        <h2 id="h-desc" class="display">{ar ? 'الوصف' : 'Description'}</h2>
+        <div class="prose"><p>{p.description[lang]}</p></div>
+      </section>
+
+      <section aria-labelledby="h-fit">
+        <h2 id="h-fit" class="display">{t(lang, 'compat')}</h2>
+        {p.universal ? (
+          <p class="flag flag-ok"><Icon name="check" />{t(lang, 'fluidUniversal')}</p>
+        ) : (
+          <div class="table-wrap">
+            <table class="fit-table">
+              <thead><tr><th scope="col">{t(lang, 'vehicleCol')}</th><th scope="col">{t(lang, 'chassisCol')}</th><th scope="col">{t(lang, 'yearsCol')}</th><th scope="col">{t(lang, 'notesCol')}</th></tr></thead>
+              <tbody>
+                {p.fitment.map((f) => (
+                  <tr>
+                    <td><a href={lp(lang, `/vehicles/${f.make}/`)}>{ar ? MAKES[f.make]?.ar : MAKES[f.make]?.en}</a> <span class="ltr">{f.model}</span>{f.unclear && <span class="chip" style="margin-inline-start:6px">{ar ? 'يلزم التأكيد' : 'Confirm'}</span>}</td>
+                    <td class="mono">{f.chassis.length ? <span class="ltr">{f.chassis.join(' / ')}</span> : <span class="muted">{t(lang, 'notListed')}</span>}</td>
+                    <td class="mono">{yearTxt(f) ? <span class="ltr">{yearTxt(f)}</span> : <span class="muted">{t(lang, 'notListed')}</span>}</td>
+                    <td>{f.notes.length ? <span class="ltr">{f.notes.join(', ')}</span> : <span class="muted">—</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <p class="flag" style="margin-top:12px"><Icon name="info" />{t(lang, 'compatNote')}</p>
+      </section>
+
+      <section aria-labelledby="h-spec">
+        <h2 id="h-spec" class="display">{t(lang, 'specs')}</h2>
+        <dl class="spec-list">
+          <div><dt>{t(lang, 'brand')}</dt><dd>Brembo</dd></div>
+          <div><dt>{t(lang, 'categoryLbl')}</dt><dd>{catName}</dd></div>
+          {posTxt && <div><dt>{t(lang, 'position')}</dt><dd>{posTxt}</dd></div>}
+          <div><dt>{t(lang, 'soldAs')}</dt><dd>{unit}</dd></div>
+          <div><dt>{t(lang, 'sku')}</dt><dd class="mono ltr">{p.sku}</dd></div>
+          {p.oe && p.oe !== p.sku && <div><dt>{t(lang, 'oe')}</dt><dd class="mono ltr">{p.oe}</dd></div>}
+          {p.fluidSpec && <div><dt>{ar ? 'المواصفة' : 'Specification'}</dt><dd class="ltr">{p.fluidSpec}</dd></div>}
+          {p.volumeMl && <div><dt>{ar ? 'السعة' : 'Volume'}</dt><dd class="ltr">{p.volumeMl} ml</dd></div>}
+          {p.category === 'brake-discs' && <div><dt>{t(lang, 'diameter')}</dt><dd style="font-weight:500;color:var(--steel)">{t(lang, 'confirmWithUs')}</dd></div>}
+          <div><dt>{t(lang, 'supplierDesc')}</dt><dd class="ltr" style="font-weight:500">{p.supplierDesc}</dd></div>
+        </dl>
+      </section>
+
+      {comp.length > 0 && (
+        <section aria-labelledby="h-comp">
+          <h2 id="h-comp" class="display">{t(lang, 'forSameVehicle')}</h2>
+          <div class="rail">{comp.map((x) => <ProductCard p={x} lang={lang} />)}</div>
+        </section>
+      )}
+      {rel.length > 0 && (
+        <section aria-labelledby="h-rel">
+          <h2 id="h-rel" class="display">{t(lang, 'similar')}</h2>
+          <div class="rail">{rel.map((x) => <ProductCard p={x} lang={lang} />)}</div>
+        </section>
+      )}
+    </div>
+  </div>
+
+  <div class="buy-bar" data-buy-bar>
+    <div class="price"><b>{formatBaisa(p.priceBaisa)}</b><small>{t(lang, 'omr')} / {unit}</small></div>
+    <button class="btn btn-red" type="button" data-add={p.sku} data-qty-from="#qty"><Icon name="cart" /><span class="lbl">{t(lang, 'addToCart')}</span></button>
+  </div>
+  <script>
+    import '../scripts/product.ts';
+  </script>
+</Layout>

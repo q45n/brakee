@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { lp, t } from '../lib/i18n.ts';
+import type { Lang } from '../lib/catalog.ts';
+import { GOVERNORATES } from '../data/governorates.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === 'ar';
+const govJson = JSON.stringify(GOVERNORATES.map((g) => ({ id: g.id, w: g.wilayats.map((w) => ({ v: w.en, l: ar ? w.ar : w.en })) }))).replace(/</g, '\\u003c');
+---
+<Layout lang={lang} path="/checkout/" noindex title={t(lang, 'checkoutTitle')} description={t(lang, 'checkoutTitle')}>
+  <div class="page-head"><div class="wrap"><h1 class="display">{t(lang, 'checkoutTitle')}</h1></div></div>
+  <div class="wrap">
+    <div class="empty" data-checkout-empty hidden style="margin-block:32px 80px">
+      <Icon name="cart" /><h3>{t(lang, 'emptyCheckout')}</h3><p>{t(lang, 'cartEmptySub')}</p>
+      <div class="actions"><a class="btn btn-red" href={lp(lang, '/shop/')}>{t(lang, 'browse')}</a></div>
+    </div>
+    <form class="checkout" data-checkout novalidate>
+      <div>
+        <div class="form-alert" data-form-alert role="alert" hidden style="margin-bottom:16px"><span data-alert-text></span><a class="btn btn-wa" data-alert-wa hidden target="_blank" rel="noopener noreferrer"><Icon name="wa" />{t(lang, 'sendWhatsappFallback')}</a></div>
+        <section class="panel">
+          <h2><span class="n">1</span>{t(lang, 'contact')}</h2>
+          <div class="form-grid">
+            <div class="field">
+              <label for="c-name">{t(lang, 'fullName')}</label>
+              <input class="input" id="c-name" name="name" autocomplete="name" maxlength="80" required placeholder={t(lang, 'namePh')} aria-describedby="e-name" />
+              <p class="field-error" id="e-name" hidden></p>
+            </div>
+            <div class="field">
+              <label for="c-phone">{t(lang, 'phone')}</label>
+              <div class="phone-field"><span class="cc">+968</span><input class="input" id="c-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="12" required placeholder="9XXXXXXX" aria-describedby="h-phone e-phone" /></div>
+              <p class="hint" id="h-phone">{t(lang, 'phoneHint')}</p>
+              <p class="field-error" id="e-phone" hidden></p>
+            </div>
+          </div>
+        </section>
+        <section class="panel">
+          <h2><span class="n">2</span>{t(lang, 'deliveryAddress')}</h2>
+          <div class="form-grid">
+            <div class="field">
+              <label for="c-gov">{t(lang, 'governorate')}</label>
+              <select class="select" id="c-gov" name="governorate" required aria-describedby="e-gov">
+                <option value="">{t(lang, 'chooseGov')}</option>
+                {GOVERNORATES.map((g) => <option value={g.id}>{ar ? g.ar : g.en}</option>)}
+              </select>
+              <p class="field-error" id="e-gov" hidden></p>
+            </div>
+            <div class="field">
+              <label for="c-wil">{t(lang, 'wilayat')}</label>
+              <select class="select" id="c-wil" name="wilayat" required disabled aria-describedby="e-wil"><option value="">{t(lang, 'chooseWil')}</option></select>
+              <p class="field-error" id="e-wil" hidden></p>
+            </div>
+            <div class="field full">
+              <label for="c-address">{t(lang, 'address')}</label>
+              <textarea class="textarea" id="c-address" name="address" autocomplete="street-address" maxlength="300" required placeholder={t(lang, 'addressPh')} aria-describedby="e-address"></textarea>
+              <p class="field-error" id="e-address" hidden></p>
+            </div>
+            <div class="field">
+              <label for="c-vin">{t(lang, 'vin')}</label>
+              <input class="input mono" id="c-vin" name="vin" maxlength="17" autocapitalize="characters" autocomplete="off" spellcheck="false" dir="ltr" aria-describedby="h-vin e-vin" />
+              <p class="hint" id="h-vin">{t(lang, 'vinHint')}</p>
+              <p class="field-error" id="e-vin" hidden></p>
+            </div>
+            <div class="field">
+              <label for="c-notes">{t(lang, 'notes')}</label>
+              <input class="input" id="c-notes" name="notes" maxlength="500" placeholder={t(lang, 'notesPh')} />
+            </div>
+            <div class="hp" aria-hidden="true"><label for="c-company">Company</label><input id="c-company" name="company" tabindex="-1" autocomplete="off" /></div>
+          </div>
+        </section>
+        <section class="panel">
+          <h2><span class="n">3</span>{t(lang, 'payment')}</h2>
+          <div class="pay-opts" role="radiogroup">
+            <label class="pay-opt"><input type="radio" name="payment" value="cod" checked /><span><b>{t(lang, 'payCod')}</b><span>{t(lang, 'payCodSub')}</span></span></label>
+            <label class="pay-opt"><input type="radio" name="payment" value="payment-link" /><span><b>{t(lang, 'payLink')}</b><span>{t(lang, 'payLinkSub')}</span></span></label>
+          </div>
+          <p class="secure-note"><Icon name="lock" />{t(lang, 'payNote')}</p>
+        </section>
+      </div>
+      <aside class="panel summary" aria-labelledby="sum-title">
+        <h2 id="sum-title">{t(lang, 'orderSummary')}</h2>
+        <div class="lines" data-summary-lines><div class="skeleton" style="height:52px"></div></div>
+        <div class="sums">
+          <div class="sum"><span>{t(lang, 'subtotal')}</span><b data-s-sub>—</b></div>
+          <div class="sum"><span>{t(lang, 'delivery')}</span><b data-s-del>—</b></div>
+          <div class="sum total"><span>{t(lang, 'total')}</span><b data-s-total>—</b></div>
+        </div>
+        <button class="btn btn-red btn-lg btn-block" type="submit" style="margin-top:16px" data-submit>{t(lang, 'placeOrder')}</button>
+        <p class="hint" style="margin-top:10px;font-size:13px;color:var(--steel)">{t(lang, 'termsLine')}</p>
+        <a class="btn btn-ghost btn-block" style="margin-top:8px" href={lp(lang, '/shop/')}>{t(lang, 'continueShopping')}</a>
+      </aside>
+      <script type="application/json" data-gov set:html={govJson} />
+    </form>
+  </div>
+  <script>
+    import '../scripts/checkout.ts';
+  </script>
+</Layout>

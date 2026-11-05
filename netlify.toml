@@ -1,0 +1,48 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+
+# Product photos are hosted by third parties; serve them optimised (WebP/AVIF, resized) through Netlify Image CDN.
+[images]
+  remote_images = [
+    'https://www\.hybrid-racing\.com/.*',
+    'https://encrypted-tbn0\.gstatic\.com/.*',
+    'https://www\.bremboparts\.com/.*',
+    'https://m\.media-amazon\.com/.*',
+  ]
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://upload.wikimedia.org; font-src 'self'; connect-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Cross-Origin-Opener-Policy = "same-origin"
+
+# Hashed build assets never change — cache for a year.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/catalog-index.json"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Old single-page links (e.g. shared "/#products") keep working; legacy file path goes home.
+[[redirects]]
+  from = "/dockerfile"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/en/*"
+  to = "/en/404/"
+  status = 404

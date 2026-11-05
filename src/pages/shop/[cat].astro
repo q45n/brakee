@@ -1,0 +1,7 @@
+---
+import V from '../../views/ShopView.astro';
+import { CATEGORIES, type CategoryId } from '../../lib/catalog.ts';
+export function getStaticPaths() { return CATEGORIES.map((c) => ({ params: { cat: c.id } })); }
+const { cat } = Astro.params;
+---
+<V lang="ar" category={cat as CategoryId} />

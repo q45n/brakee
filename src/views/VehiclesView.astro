@@ -1,0 +1,34 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { lp, t } from '../lib/i18n.ts';
+import { VEHICLE_INDEX, type Lang } from '../lib/catalog.ts';
+import { breadcrumbLd } from '../lib/seo.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === 'ar';
+const makes = [...VEHICLE_INDEX].sort((a, b) => (ar ? a.ar.localeCompare(b.ar, 'ar') : a.en.localeCompare(b.en)));
+const crumbs = [{ name: t(lang, 'home'), href: lp(lang, '/') }, { name: t(lang, 'navVehicles'), href: lp(lang, '/vehicles/') }];
+---
+<Layout lang={lang} path="/vehicles/" current="vehicles"
+  title={ar ? 'قطع فرامل حسب السيارة — مرسيدس، بي إم دبليو، لاند روفر، بورشه وغيرها' : 'Brake Parts by Vehicle — Mercedes-Benz, BMW, Land Rover, Porsche & more'}
+  description={ar ? 'اختر شركة سيارتك وموديلها لعرض قطع فرامل بريمبو المُدرجة لها، مع الجيل وسنوات الصنع حيثما توفرت.' : 'Choose your make and model to see the Brembo brake parts listed for it, with generation and model years where available.'}
+  jsonLd={[breadcrumbLd(crumbs)]}>
+  <div class="page-head"><div class="wrap">
+    <ol class="crumbs">{crumbs.map((c, i) => <li>{i < crumbs.length - 1 ? <a href={c.href}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>)}</ol>
+    <h1 class="display">{ar ? 'تسوّق حسب السيارة' : 'Shop by vehicle'}</h1>
+    <p class="lead">{ar ? 'الموديلات أدناه مأخوذة من بيانات التوافق المُدرجة لكل قطعة. إن لم تجد سيارتك، أرسل لنا رقم الشاصي.' : 'Models below come from the fitment listed for each part. If your vehicle is missing, send us your VIN.'}</p>
+  </div></div>
+  <div class="wrap section-tight" style="display:grid;gap:14px">
+    {makes.map((m) => (
+      <section class="panel" aria-labelledby={`mk-${m.id}`}>
+        <h2 id={`mk-${m.id}`} style="justify-content:space-between;flex-wrap:wrap">
+          <a href={lp(lang, `/vehicles/${m.id}/`)} style="text-decoration:none">{ar ? `${m.ar} · ${m.en}` : m.en}</a>
+          <span class="mono" style="font-size:13px;color:var(--steel)">{m.count} {t(lang, 'results')}</span>
+        </h2>
+        <div class="seg">
+          {m.models.map((md) => <a href={`${lp(lang, `/vehicles/${m.id}/`)}?model=${md.slug}`}><span class="ltr">{md.model}</span> <small>{md.count}</small></a>)}
+        </div>
+      </section>
+    ))}
+  </div>
+</Layout>

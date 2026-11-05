@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { lp, t } from '../lib/i18n.ts';
+import type { Lang } from '../lib/catalog.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === 'ar';
+---
+<Layout lang={lang} path="/404/" noindex title={ar ? 'الصفحة غير موجودة' : 'Page not found'} description={ar ? 'الصفحة غير موجودة' : 'Page not found'}>
+  <div class="wrap nf">
+    <div class="code">404</div>
+    <h1 class="display" style="font-size:32px;margin-top:10px">{ar ? 'الصفحة غير موجودة' : 'Page not found'}</h1>
+    <p style="color:var(--steel);margin:10px auto 24px;max-width:46ch">{ar ? 'ربما تغيّر الرابط. ابحث برقم القطعة أو تصفّح المتجر.' : 'The link may have changed. Search by part number or browse the shop.'}</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-red" href={lp(lang, '/shop/')}>{t(lang, 'browse')}</a>
+      <a class="btn btn-ghost" href={lp(lang, '/')}>{t(lang, 'home')}</a>
+    </div>
+  </div>
+</Layout>

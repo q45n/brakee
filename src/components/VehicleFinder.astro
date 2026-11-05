@@ -1,0 +1,35 @@
+---
+import { t } from '../lib/i18n.ts';
+import { VEHICLE_INDEX, type Lang } from '../lib/catalog.ts';
+import { lp } from '../lib/i18n.ts';
+
+interface Props { lang: Lang; variant?: 'hero' | 'sidebar'; idPrefix?: string }
+const { lang, variant = 'hero', idPrefix = 'vf' } = Astro.props;
+const data = VEHICLE_INDEX.map((m) => ({ id: m.id, models: m.models.map((x) => ({ s: x.slug, n: x.model, c: x.chassis, y: x.years })) }));
+const json = JSON.stringify(data).replace(/</g, '\\u003c');
+const makes = [...VEHICLE_INDEX].sort((a, b) => (lang === 'ar' ? a.ar.localeCompare(b.ar, 'ar') : a.en.localeCompare(b.en)));
+const id = (s: string) => `${idPrefix}-${s}`;
+---
+<form class={variant === 'hero' ? 'finder-form' : 'f-vehicle-form'} action={lp(lang, '/shop/')} method="get" data-finder data-variant={variant}>
+  <div class="field">
+    <label for={id('make')}>{variant === 'hero' && <span class="finder-step">01</span>}{t(lang, 'make')}</label>
+    <select class="select" id={id('make')} name="make" data-f="make">
+      <option value="">{t(lang, 'chooseMake')}</option>
+      {makes.map((m) => <option value={m.id}>{lang === 'ar' ? `${m.ar} — ${m.en}` : m.en}</option>)}
+    </select>
+  </div>
+  <div class="field">
+    <label for={id('model')}>{variant === 'hero' && <span class="finder-step">02</span>}{t(lang, 'model')}</label>
+    <select class="select" id={id('model')} name="model" data-f="model" disabled><option value="">{t(lang, 'chooseModel')}</option></select>
+  </div>
+  <div class="field">
+    <label for={id('chassis')}>{variant === 'hero' && <span class="finder-step">03</span>}{t(lang, 'chassis')}</label>
+    <select class="select" id={id('chassis')} name="chassis" data-f="chassis" disabled><option value="">{t(lang, 'anyChassis')}</option></select>
+  </div>
+  <div class="field">
+    <label for={id('year')}>{variant === 'hero' && <span class="finder-step">04</span>}{t(lang, 'year')}</label>
+    <select class="select" id={id('year')} name="year" data-f="year" disabled><option value="">{t(lang, 'anyYear')}</option></select>
+  </div>
+  {variant === 'hero' && <button class="btn btn-red btn-lg" type="submit">{t(lang, 'findParts')}</button>}
+  <script type="application/json" data-vehicle-data set:html={json} />
+</form>
