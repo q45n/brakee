@@ -1,0 +1,137 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RotorArt from '../components/RotorArt.astro';
+import VehicleFinder from '../components/VehicleFinder.astro';
+import Icon from '../components/Icon.astro';
+import { lp, t } from '../lib/i18n.ts';
+import { CATEGORIES, PRODUCTS, VEHICLE_INDEX, type Lang } from '../lib/catalog.ts';
+import { cdn } from '../lib/media.ts';
+import { orgLd, websiteLd } from '../lib/seo.ts';
+import { STORE } from '../data/store.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === 'ar';
+const counts = Object.fromEntries(CATEGORIES.map((c) => [c.id, PRODUCTS.filter((p) => p.category === c.id).length]));
+const makes = [...VEHICLE_INDEX].sort((a, b) => b.count - a.count);
+const title = ar ? 'قطع فرامل بريمبو الأصلية في عُمان — أقمشة وأقراص وحساسات' : 'Brembo Brake Parts in Oman — Pads, Discs, Sensors & Fluid';
+const description = ar
+  ? `أكثر من ${PRODUCTS.length} قطعة فرامل بريمبو: أقمشة، أقراص، حساسات تآكل وزيت فرامل لمرسيدس، بي إم دبليو، لاند روفر، بورشه، أودي وغيرها. ابحث برقم القطعة أو بسيارتك. توصيل 2.000 ر.ع لجميع محافظات عُمان والدفع عند الاستلام.`
+  : `${PRODUCTS.length}+ Brembo brake parts — pads, discs, wear sensors and brake fluid for Mercedes-Benz, BMW, Land Rover, Porsche, Audi and more. Search by part number or vehicle. 2.000 OMR delivery anywhere in Oman, cash on delivery.`;
+---
+<Layout lang={lang} title={title} description={description} path="/" jsonLd={[orgLd(lang), websiteLd(lang)]}>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow rise d1">BREMBO OMAN · {ar ? 'سلطنة عُمان' : 'Sultanate of Oman'}</span>
+        {ar
+          ? <h1 class="display rise d2">قطع فرامل بريمبو الأصلية، <em>مطابقة لسيارتك.</em></h1>
+          : <h1 class="display rise d2">Brembo brake parts, <em>matched to your car.</em></h1>}
+        <p class="hero-lead rise d3">
+          {ar
+            ? 'أقمشة وأقراص وحساسات تآكل وزيت فرامل لأشهر الماركات الأوروبية والأمريكية واليابانية — بأسعار واضحة بالريال العُماني، مع رقم OE لكل قطعة، وتوصيل لجميع محافظات السلطنة.'
+            : 'Pads, discs, wear sensors and brake fluid for leading European, American and Japanese makes — clear prices in Omani Rial, the OE number on every part, and delivery to every governorate.'}
+        </p>
+        <div class="hero-stats rise d4">
+          <div><b>{PRODUCTS.length}</b><span>{ar ? 'قطعة في الكتالوج' : 'parts in the catalogue'}</span></div>
+          <div><b>{VEHICLE_INDEX.length}</b><span>{ar ? 'شركة سيارات' : 'vehicle makes'}</span></div>
+          <div><b>{(STORE.deliveryFeeBaisa / 1000).toFixed(3)}</b><span>{ar ? 'ر.ع توصيل لأي محافظة' : 'OMR delivery, any governorate'}</span></div>
+        </div>
+      </div>
+      <RotorArt />
+    </div>
+  </section>
+
+  <div class="finder-wrap">
+    <div class="wrap">
+      <section class="finder rise d5" aria-labelledby="finder-title">
+        <div class="finder-head">
+          <h2 id="finder-title" class="display">{t(lang, 'finderTitle')}</h2>
+          <p>{t(lang, 'finderSub')}</p>
+        </div>
+        <VehicleFinder lang={lang} idPrefix="hero" />
+        <div class="finder-alt">
+          <Icon name="tag" class="flip-rtl" />
+          <span>{ar ? 'تعرف رقم القطعة؟ ابحث برقم OE أو رقم بريمبو من شريط البحث في الأعلى.' : 'Know the part number? Search by OE or Brembo number in the search bar above.'}</span>
+          <a href={lp(lang, '/fitment/')}>{ar ? 'كيف أجد رقم القطعة؟' : 'Where do I find it?'}</a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div><span class="eyebrow">01 — {ar ? 'الأقسام' : 'Categories'}</span><h2 class="display">{ar ? 'تسوّق حسب القسم' : 'Shop by category'}</h2></div>
+        <a class="link-arrow" href={lp(lang, '/shop/')}>{ar ? 'كل المنتجات' : 'All products'}<Icon name="arrow" /></a>
+      </div>
+      <div class="cat-mosaic">
+        {CATEGORIES.map((c, i) => (
+          <a class="cat-tile" href={lp(lang, `/shop/${c.id}/`)} data-astro-prefetch>
+            <span class="idx">0{i + 1}</span>
+            <div class="media">
+              <img src={cdn(c.image, i === 0 ? 720 : 420)} srcset={`${cdn(c.image, 360)} 360w, ${cdn(c.image, 560)} 560w, ${cdn(c.image, 820)} 820w`} sizes={i === 0 ? '(max-width: 900px) 92vw, 40vw' : '(max-width: 900px) 45vw, 28vw'} width="560" height="420" alt={`${ar ? c.ar : c.en} — ${t(lang, 'representative')}`} loading="lazy" decoding="async" data-fallback={c.id} />
+            </div>
+            <div class="info">
+              <div><h3>{ar ? c.ar : c.en}</h3><p>{ar ? c.blurbAr : c.blurbEn}</p></div>
+              <span class="count">{counts[c.id]} {t(lang, 'results')}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white">
+    <div class="wrap">
+      <div class="section-head">
+        <div><span class="eyebrow">02 — {ar ? 'السيارات' : 'Vehicles'}</span><h2 class="display">{ar ? 'تسوّق حسب الشركة' : 'Shop by make'}</h2></div>
+        <p>{ar ? 'اختر شركة سيارتك لعرض كل القطع المُدرجة لها.' : 'Pick your make to see every part listed for it.'}</p>
+      </div>
+      <div class="make-grid">
+        {makes.map((m) => (
+          <a class="make-tile" href={lp(lang, `/vehicles/${m.id}/`)} data-astro-prefetch>
+            <span class="make-logo">
+              {m.logo
+                ? <img src={m.logo} alt="" width="52" height="44" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-logo={m.en.slice(0, 2).toUpperCase()} />
+                : <span class="make-mono">{m.en.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase()}</span>}
+            </span>
+            <b>{ar ? m.ar : m.en}</b>
+            <span>{m.count} {t(lang, 'results')}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-ink">
+    <div class="wrap">
+      <div class="section-head">
+        <div><span class="eyebrow">03 — {ar ? 'الطلب' : 'Ordering'}</span><h2 class="display">{ar ? 'كيف يتم الطلب' : 'How ordering works'}</h2></div>
+        <p>{ar ? 'بدون حسابات أو كلمات مرور — طلبك يصلنا مباشرة ونؤكده معك على واتساب.' : 'No accounts or passwords — your order reaches us directly and we confirm it with you on WhatsApp.'}</p>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="n">01</div><h3>{ar ? 'اعثر على القطعة' : 'Find the part'}</h3><p>{ar ? 'ابحث بسيارتك أو برقم OE / بريمبو، وقارن رقم القطعة مع القطعة الحالية.' : 'Search by vehicle or by OE / Brembo number, and compare it with your current part.'}</p></div>
+        <div class="step"><div class="n">02</div><h3>{ar ? 'أكّد الطلب' : 'Place the order'}</h3><p>{ar ? 'أدخل الاسم والهاتف والعنوان. يمكنك إضافة رقم الشاصي (VIN) لنتأكد من التوافق.' : 'Enter your name, phone and address. Add your VIN so we can double-check fitment.'}</p></div>
+        <div class="step"><div class="n">03</div><h3>{ar ? 'استلم وادفع' : 'Receive & pay'}</h3><p>{ar ? 'توصيل بـ 2.000 ر.ع لأي محافظة. ادفع نقداً عند الاستلام أو عبر رابط دفع آمن.' : '2.000 OMR delivery to any governorate. Pay cash on delivery or by secure payment link.'}</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="help-band">
+        <div>
+          <span class="eyebrow">04 — {ar ? 'التوافق' : 'Fitment'}</span>
+          <h2 class="display">{ar ? 'غير متأكد أن القطعة تناسب سيارتك؟' : 'Not sure a part fits your car?'}</h2>
+          <p>{ar ? 'أرسل لنا رقم الشاصي (VIN) المكوّن من 17 خانة — تجده في استمارة السيارة (الملكية) أو أسفل الزجاج الأمامي — وسنتحقق لك قبل الطلب.' : 'Send us your 17-character VIN — it’s on your vehicle registration card (mulkiya) or at the base of the windscreen — and we’ll check before you order.'}</p>
+          <div class="vin-sample" aria-hidden="true">VIN ▸ 17 · A–Z 0–9 · no I / O / Q</div>
+        </div>
+        <div class="actions">
+          <a class="btn btn-wa btn-lg" href={`https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(ar ? 'مرحباً، أريد التأكد من قطع الفرامل المناسبة لسيارتي. رقم الشاصي (VIN): ' : 'Hello, I would like to check which brake parts fit my car. VIN: ')}`} target="_blank" rel="noopener noreferrer"><Icon name="wa" />{t(lang, 'whatsapp')}</a>
+          <a class="btn btn-ghost btn-lg" href={lp(lang, '/fitment/')}>{t(lang, 'navFitment')}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

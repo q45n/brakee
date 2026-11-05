@@ -1,0 +1,93 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { lp, t } from '../lib/i18n.ts';
+import type { Lang } from '../lib/catalog.ts';
+import { GOVERNORATES } from '../data/governorates.ts';
+import { STORE } from '../data/store.ts';
+import { breadcrumbLd } from '../lib/seo.ts';
+interface Props { lang: Lang; page: 'delivery' | 'fitment' }
+const { lang, page } = Astro.props;
+const ar = lang === 'ar';
+const path = `/${page}/`;
+const name = page === 'delivery' ? t(lang, 'navDelivery') : t(lang, 'navFitment');
+const crumbs = [{ name: t(lang, 'home'), href: lp(lang, '/') }, { name, href: lp(lang, path) }];
+const title = page === 'delivery'
+  ? (ar ? 'التوصيل والدفع — توصيل قطع الفرامل لجميع محافظات عُمان' : 'Delivery & Payment — Brake Parts Delivered Across Oman')
+  : (ar ? 'كيف تتأكد أن قطعة الفرامل تناسب سيارتك' : 'How to Check a Brake Part Fits Your Car');
+const description = page === 'delivery'
+  ? (ar ? 'رسوم توصيل ثابتة 2.000 ر.ع لكل طلب إلى جميع محافظات سلطنة عُمان. الدفع نقداً عند الاستلام أو عبر رابط دفع آمن.' : 'Flat 2.000 OMR delivery per order to every governorate in Oman. Pay cash on delivery or via a secure payment link.')
+  : (ar ? 'طابق رقم OE، تحقق من الموضع الأمامي/الخلفي، وأرسل رقم الشاصي (VIN) للتأكد من توافق قطع الفرامل قبل الطلب.' : 'Match the OE number, check front/rear position and send your VIN to confirm brake-part fitment before ordering.');
+const wa = `https://wa.me/${STORE.whatsapp}`;
+---
+<Layout lang={lang} path={path} current={page} title={title} description={description} jsonLd={[breadcrumbLd(crumbs)]}>
+  <div class="page-head"><div class="wrap">
+    <ol class="crumbs">{crumbs.map((c, i) => <li>{i < crumbs.length - 1 ? <a href={c.href}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>)}</ol>
+    <h1 class="display">{name}</h1>
+    <p class="lead">{description}</p>
+  </div></div>
+  <div class="wrap info">
+    <article class="prose">
+      {page === 'delivery' && (ar ? (
+        <>
+          <h2>رسوم التوصيل</h2>
+          <p>رسوم توصيل ثابتة <b class="mono">2.000</b> ر.ع لكل طلب، بغضّ النظر عن عدد القطع، إلى جميع محافظات سلطنة عُمان ({GOVERNORATES.length} محافظة). التوصيل داخل السلطنة فقط حالياً.</p>
+          <h2>كيف يتم تأكيد الطلب</h2>
+          <ol><li>تُرسل الطلب من صفحة إتمام الطلب ويصلك رقم طلب.</li><li>ترسل الطلب لنا عبر واتساب بضغطة واحدة.</li><li>نتأكد من التوافق (خاصةً إن أرسلت رقم الشاصي) ونتفق معك على موعد التوصيل.</li></ol>
+          <h2>طرق الدفع</h2>
+          <ul><li><b>الدفع عند الاستلام:</b> نقداً عند وصول الطلب.</li><li><b>بطاقة بنكية / Apple Pay:</b> يرسل لك فريقنا رابط دفع آمناً من مزوّد دفع مرخّص بعد تأكيد الطلب.</li></ul>
+          <p>لا يطلب هذا الموقع بيانات البطاقة ولا يخزّنها.</p>
+          <h2>الأسعار</h2>
+          <p>جميع الأسعار بالريال العُماني. أسعار الأقراص للقطعة الواحدة، وأسعار الأقمشة للطقم.</p>
+        </>
+      ) : (
+        <>
+          <h2>Delivery fee</h2>
+          <p>A flat <b class="mono">2.000</b> OMR per order, regardless of how many parts, to all {GOVERNORATES.length} governorates of the Sultanate of Oman. We currently deliver within Oman only.</p>
+          <h2>How orders are confirmed</h2>
+          <ol><li>Place your order on the checkout page and receive an order number.</li><li>Send the order to us on WhatsApp with one tap.</li><li>We confirm fitment (especially if you give us your VIN) and agree a delivery time with you.</li></ol>
+          <h2>Payment methods</h2>
+          <ul><li><b>Cash on delivery:</b> pay in cash when the order arrives.</li><li><b>Bank card / Apple Pay:</b> after confirming your order our team sends a secure link from a licensed payment provider.</li></ul>
+          <p>This website never asks for or stores card details.</p>
+          <h2>Prices</h2>
+          <p>All prices are in Omani Rial. Disc prices are per piece; pad prices are per set.</p>
+        </>
+      ))}
+      {page === 'fitment' && (ar ? (
+        <>
+          <h2>1. طابق رقم OE</h2>
+          <p>رقم OE هو رقم القطعة الأصلية من مصنّع السيارة، وتجده عادةً مطبوعاً على القطعة الحالية أو على علبتها أو في فاتورة الوكالة. كل منتج في متجرنا يعرض رقم OE ورقم بريمبو، ويمكنك البحث بأي منهما (مع أو بدون مسافات).</p>
+          <h2>2. تحقق من الموضع</h2>
+          <p>أقمشة وأقراص المحور الأمامي تختلف عن الخلفي. اختر «أمامي» أو «خلفي» من عوامل التصفية.</p>
+          <h2>3. الجيل والسنة</h2>
+          <p>بيانات التوافق مأخوذة من قائمة المورّد. بعض القطع مُدرجة مع رمز الجيل (مثل W205 أو F30) وسنوات الصنع، وبعضها مُدرج باسم الموديل فقط. عند اختيار سنة لا تغطيها القائمة صراحةً، نُظهر لك تنبيه «يلزم التأكيد».</p>
+          <h2>4. أرسل رقم الشاصي (VIN)</h2>
+          <p>رقم الشاصي مكوّن من 17 خانة، وتجده في استمارة (ملكية) السيارة أو أسفل الزجاج الأمامي من جهة السائق. أضفه في صفحة الطلب أو أرسله لنا على واتساب، وسنتحقق من القطعة قبل الشحن.</p>
+          <h2>قطر القرص</h2>
+          <p>قطر وسماكة الأقراص غير مُدرجة في بيانات المورّد الحالية، لذلك لا نعرضها. إن كانت سيارتك بنظام فرامل اختياري (مثل حزم M أو AMG أو الفرامل الرياضية)، تأكد معنا قبل الطلب.</p>
+        </>
+      ) : (
+        <>
+          <h2>1. Match the OE number</h2>
+          <p>The OE number is the vehicle manufacturer’s original part number, usually printed on your current part, its box or your dealer invoice. Every product here shows both the OE and the Brembo number, and you can search by either (with or without spaces).</p>
+          <h2>2. Check the axle</h2>
+          <p>Front and rear pads and discs are different. Use the “Front” / “Rear” filter.</p>
+          <h2>3. Generation and year</h2>
+          <p>Fitment comes from the supplier listing. Some parts are listed with a chassis code (e.g. W205 or F30) and model years; others with the model name only. If you choose a year the listing doesn’t explicitly cover, we show a “confirmation needed” notice.</p>
+          <h2>4. Send your VIN</h2>
+          <p>The VIN has 17 characters and is on your vehicle registration card (mulkiya) or at the base of the windscreen on the driver’s side. Add it at checkout or send it on WhatsApp and we will check the part before dispatch.</p>
+          <h2>Disc diameter</h2>
+          <p>Disc diameter and thickness are not included in the current supplier data, so we don’t display them. If your car has an optional brake package (e.g. M Sport, AMG or performance brakes), please confirm with us before ordering.</p>
+        </>
+      ))}
+    </article>
+    <aside>
+      <div class="panel">
+        <h2 style="font-size:18px">{ar ? 'تحتاج مساعدة؟' : 'Need help?'}</h2>
+        <p style="color:var(--steel);font-size:14.5px;margin-bottom:14px">{ar ? 'تواصل معنا على واتساب مع رقم الشاصي أو صورة القطعة الحالية.' : 'Message us on WhatsApp with your VIN or a photo of your current part.'}</p>
+        <a class="btn btn-wa btn-block" href={wa} target="_blank" rel="noopener noreferrer"><Icon name="wa" /><span class="ltr">{STORE.whatsappDisplay}</span></a>
+        <a class="btn btn-ghost btn-block" style="margin-top:8px" href={lp(lang, '/shop/')}>{t(lang, 'browse')}</a>
+      </div>
+    </aside>
+  </div>
+</Layout>

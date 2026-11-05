@@ -1,0 +1,132 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import VehicleFinder from '../components/VehicleFinder.astro';
+import Icon from '../components/Icon.astro';
+import { lp, t } from '../lib/i18n.ts';
+import { CATEGORIES, CAT_BY_ID, PRODUCTS, VEHICLE_INDEX, type CategoryId, type Lang } from '../lib/catalog.ts';
+import { MAKES } from '../lib/fitment.ts';
+import { breadcrumbLd, itemListLd } from '../lib/seo.ts';
+
+interface Props { lang: Lang; category?: CategoryId; make?: string }
+const { lang, category, make } = Astro.props;
+const ar = lang === 'ar';
+const cat = category ? CAT_BY_ID.get(category)! : null;
+const mk = make ? MAKES[make] : null;
+const vmake = make ? VEHICLE_INDEX.find((m) => m.id === make) : null;
+
+const list = PRODUCTS.filter((p) => (!category || p.category === category) && (!make || p.makes.includes(make)));
+const path = category ? `/shop/${category}/` : make ? `/vehicles/${make}/` : '/shop/';
+const catName = cat ? (ar ? cat.ar : cat.en) : null;
+const makeName = mk ? (ar ? mk.ar : mk.en) : null;
+
+const h1 = catName
+  ? (ar ? `${catName} بريمبو` : `Brembo ${catName}`)
+  : makeName
+    ? (ar ? `قطع فرامل ${makeName}` : `${makeName} brake parts`)
+    : (ar ? 'متجر قطع الفرامل' : 'Brake parts shop');
+const title = catName
+  ? (ar ? `${catName} بريمبو في عُمان — ${list.length} قطعة` : `Brembo ${catName} in Oman — ${list.length} parts`)
+  : makeName
+    ? (ar ? `أقمشة وأقراص فرامل ${makeName} في عُمان — بريمبو` : `${makeName} Brake Pads & Discs in Oman — Brembo`)
+    : (ar ? 'كل قطع فرامل بريمبو في عُمان' : 'All Brembo Brake Parts in Oman');
+const description = catName
+  ? (ar ? `${cat!.blurbAr} ${list.length} قطعة مع رقم OE والتوافق المُدرج، بأسعار بالريال العُماني وتوصيل 2.000 ر.ع لكل المحافظات.` : `${cat!.blurbEn} ${list.length} parts with OE numbers and listed fitment, priced in OMR with 2.000 OMR delivery across Oman.`)
+  : makeName
+    ? (ar ? `${list.length} قطعة فرامل بريمبو مُدرجة لسيارات ${makeName}: ${vmake?.models.slice(0, 6).map((m) => m.model).join('، ')} وغيرها. توصيل لجميع محافظات عُمان.` : `${list.length} Brembo brake parts listed for ${makeName}: ${vmake?.models.slice(0, 6).map((m) => m.model).join(', ')} and more. Delivery across Oman.`)
+    : (ar ? `تصفّح ${list.length} قطعة فرامل بريمبو — ابحث بالسيارة أو رقم OE، وصفِّ حسب القسم وموضع التركيب.` : `Browse ${list.length} Brembo brake parts — search by vehicle or OE number, filter by category and axle.`);
+
+const crumbs = [
+  { name: t(lang, 'home'), href: lp(lang, '/') },
+  ...(make ? [{ name: t(lang, 'navVehicles'), href: lp(lang, '/vehicles/') }] : [{ name: t(lang, 'shop'), href: lp(lang, '/shop/') }]),
+  ...(catName ? [{ name: catName, href: lp(lang, path) }] : []),
+  ...(makeName ? [{ name: makeName, href: lp(lang, path) }] : []),
+];
+const catCounts = Object.fromEntries(CATEGORIES.map((c) => [c.id, list.filter((p) => p.category === c.id).length]));
+const hasPos = list.some((p) => p.position);
+---
+<Layout lang={lang} title={title} description={description} path={path} current={make ? 'vehicles' : 'shop'} jsonLd={[breadcrumbLd(crumbs), itemListLd(list, lang)]}>
+  <div class="page-head">
+    <div class="wrap">
+      <ol class="crumbs">{crumbs.map((c, i) => <li>{i < crumbs.length - 1 ? <a href={c.href}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>)}</ol>
+      <h1 class="display">{h1}</h1>
+      <p class="lead">{description}</p>
+    </div>
+  </div>
+
+  <div class="wrap catalog" data-catalog data-fixed-make={make ?? ''} data-fixed-cat={category ?? ''}>
+    <aside class="filters" id="filters" aria-label={t(lang, 'filters')} data-filters>
+      <div class="filters-head"><b>{t(lang, 'filters')}</b><button class="icon-btn" type="button" data-close-filters aria-label={t(lang, 'close')}><Icon name="close" /></button></div>
+
+      <div class="f-group">
+        <span class="label">{t(lang, 'vehicleSelected')}</span>
+        <div class="f-vehicle">
+          <VehicleFinder lang={lang} variant="sidebar" idPrefix="sf" />
+        </div>
+      </div>
+
+      {!category && (
+        <div class="f-group" role="group" aria-labelledby="f-cat">
+          <span class="label" id="f-cat">{t(lang, 'category')}</span>
+          <div class="seg" data-filter="cat">
+            <button type="button" data-v="" aria-pressed="true">{t(lang, 'all')} <small>{list.length}</small></button>
+            {CATEGORIES.filter((c) => catCounts[c.id]).map((c) => <button type="button" data-v={c.id} aria-pressed="false">{ar ? c.ar : c.en} <small>{catCounts[c.id]}</small></button>)}
+          </div>
+        </div>
+      )}
+      {category && (
+        <div class="f-group">
+          <span class="label">{t(lang, 'category')}</span>
+          <div class="seg">
+            <a href={lp(lang, '/shop/')}>{t(lang, 'allCategories')}</a>
+            {CATEGORIES.map((c) => <a href={lp(lang, `/shop/${c.id}/`)} aria-current={c.id === category ? 'page' : undefined}>{ar ? c.ar : c.en}</a>)}
+          </div>
+        </div>
+      )}
+
+      {hasPos && (
+        <div class="f-group" role="group" aria-labelledby="f-pos">
+          <span class="label" id="f-pos">{t(lang, 'position')}</span>
+          <div class="seg" data-filter="pos">
+            <button type="button" data-v="" aria-pressed="true">{t(lang, 'all')}</button>
+            <button type="button" data-v="front" aria-pressed="false">{t(lang, 'front')}</button>
+            <button type="button" data-v="rear" aria-pressed="false">{t(lang, 'rear')}</button>
+          </div>
+        </div>
+      )}
+
+      <div class="filters-foot"><button class="btn btn-red btn-block" type="button" data-close-filters>{t(lang, 'showResults')} (<span data-count-inline>{list.length}</span>)</button></div>
+    </aside>
+
+    <section id="results" aria-live="polite" aria-busy="false">
+      <div class="results-bar">
+        <p class="results-count"><b data-count>{list.length}</b> {t(lang, 'results')}</p>
+        <div class="right">
+          <button class="btn btn-ghost filter-toggle" type="button" data-open-filters aria-controls="filters" aria-expanded="false"><Icon name="filter" />{t(lang, 'filters')}</button>
+          <label class="sr-only" for="sort">{t(lang, 'sort')}</label>
+          <select class="select" id="sort" data-sort>
+            <option value="">{t(lang, 'sortRelevance')}</option>
+            <option value="price-asc">{t(lang, 'sortPriceAsc')}</option>
+            <option value="price-desc">{t(lang, 'sortPriceDesc')}</option>
+          </select>
+        </div>
+      </div>
+      <div class="active-filters" data-active hidden></div>
+      <div class="grid" data-grid>
+        {list.map((p, i) => <ProductCard p={p} lang={lang} withData eager={i < 2} />)}
+      </div>
+      <div class="empty" data-empty hidden>
+        <Icon name="disc" />
+        <h3>{t(lang, 'noResults')}</h3>
+        <p>{t(lang, 'noResultsSub')}</p>
+        <div class="actions">
+          <button class="btn btn-ghost" type="button" data-clear>{t(lang, 'clearAll')}</button>
+          <a class="btn btn-wa" href="https://wa.me/96877277237" target="_blank" rel="noopener noreferrer"><Icon name="wa" />{t(lang, 'whatsapp')}</a>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+    import '../scripts/shop.ts';
+  </script>
+</Layout>

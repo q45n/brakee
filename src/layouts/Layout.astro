@@ -1,0 +1,84 @@
+---
+import '@fontsource/ibm-plex-sans-arabic/400.css';
+import '@fontsource/ibm-plex-sans-arabic/500.css';
+import '@fontsource/ibm-plex-sans-arabic/600.css';
+import '@fontsource/ibm-plex-sans-arabic/700.css';
+import '@fontsource/barlow-condensed/600.css';
+import '@fontsource/barlow-condensed/700.css';
+import '@fontsource/jetbrains-mono/500.css';
+import '@fontsource/jetbrains-mono/700.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import { lp, basePath, t, dictFor, CLIENT_KEYS } from '../lib/i18n.ts';
+import type { Lang } from '../lib/catalog.ts';
+import { STORE } from '../data/store.ts';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** Path without language prefix, e.g. "/shop/brake-pads/". Used for canonical + hreflang. */
+  path: string;
+  image?: string;
+  type?: 'website' | 'product';
+  jsonLd?: unknown[];
+  current?: string;
+  noindex?: boolean;
+  bodyClass?: string;
+}
+const { lang, title, description, path, image, type = 'website', jsonLd = [], current, noindex = false, bodyClass } = Astro.props;
+const site = STORE.url;
+const canonical = new URL(lp(lang, path), site).href;
+const altAr = new URL(lp('ar', path), site).href;
+const altEn = new URL(lp('en', path), site).href;
+const altHref = lp(lang === 'ar' ? 'en' : 'ar', basePath(path));
+const ogImage = image ? new URL(image, site).href : new URL('/og.png', site).href;
+const fullTitle = title.includes(STORE.name) ? title : `${title} | ${STORE.name}`;
+const d = dictFor(lang);
+const clientStrings = JSON.stringify(Object.fromEntries(CLIENT_KEYS.map((k) => [k, d[k]]))).replace(/</g, '\\u003c');
+const ld = jsonLd.map((x) => JSON.stringify(x).replace(/</g, '\\u003c'));
+---
+<!doctype html>
+<html lang={lang} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonical} />}
+    {!noindex && <link rel="alternate" hreflang="ar-OM" href={altAr} />}
+    {!noindex && <link rel="alternate" hreflang="en-OM" href={altEn} />}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={altAr} />}
+    <meta name="theme-color" content="#111114" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:site_name" content={STORE.name} />
+    <meta property="og:type" content={type === 'product' ? 'product' : 'website'} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'ar' ? 'ar_OM' : 'en_OM'} />
+    <meta property="og:locale:alternate" content={lang === 'ar' ? 'en_OM' : 'ar_OM'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {ld.map((x) => <script type="application/ld+json" set:html={x} />)}
+  </head>
+  <body class={bodyClass} data-lang={lang}>
+    <a class="skip-link" href="#main">{t(lang, 'skip')}</a>
+    <Header lang={lang} altHref={altHref} current={current} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer lang={lang} altHref={altHref} />
+    <CartDrawer lang={lang} />
+    <script type="application/json" id="i18n" set:html={clientStrings} />
+    <script type="application/json" id="cfg" set:html={JSON.stringify({ lang, base: lang === 'en' ? '/en' : '', fee: STORE.deliveryFeeBaisa, max: STORE.maxQtyPerLine, wa: STORE.whatsapp })} />
+    <script>
+      import '../scripts/app.ts';
+    </script>
+  </body>
+</html>

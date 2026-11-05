@@ -1,0 +1,7 @@
+---
+import V from '../../../views/ShopView.astro';
+import { VEHICLE_INDEX } from '../../../lib/catalog.ts';
+export function getStaticPaths() { return VEHICLE_INDEX.map((m) => ({ params: { make: m.id } })); }
+const { make } = Astro.params;
+---
+<V lang="en" make={make} />

@@ -1,0 +1,55 @@
+---
+import Icon from './Icon.astro';
+import { lp, t } from '../lib/i18n.ts';
+import { CAT_BY_ID, type Lang, type Product } from '../lib/catalog.ts';
+import { cdn } from '../lib/media.ts';
+import { formatBaisa } from '../data/store.ts';
+
+interface Props { p: Product; lang: Lang; eager?: boolean; withData?: boolean; headingLevel?: 'h2' | 'h3' }
+const { p, lang, eager = false, withData = false, headingLevel = 'h3' } = Astro.props;
+const H = headingLevel;
+const href = lp(lang, `/p/${p.slug}/`);
+const cat = CAT_BY_ID.get(p.category)!;
+const unit = p.unit === 'SET' ? t(lang, 'perSet') : t(lang, 'perPiece');
+const alt = `${p.title[lang]}${p.imageIsRepresentative ? ` — ${t(lang, 'representative')}` : ''}`;
+// compact fitment for client-side vehicle filtering: [make, model, chassis[], from, to, present]
+const fit = withData ? JSON.stringify(p.fitment.filter((f) => !f.unclear).map((f) => [f.make, f.model, f.chassis, f.yearFrom, f.yearTo, f.present ? 1 : 0])) : undefined;
+---
+<article
+  class="card"
+  data-card
+  data-sku={p.sku}
+  data-cat={withData ? p.category : undefined}
+  data-pos={withData ? (p.position ?? '') : undefined}
+  data-price={withData ? p.priceBaisa : undefined}
+  data-order={withData ? p.order : undefined}
+  data-makes={withData ? p.makes.join(' ') : undefined}
+  data-universal={withData && p.universal ? '1' : undefined}
+  data-fit={fit}
+  data-search={withData ? p.search : undefined}
+>
+  <div class="card-media">
+    <img
+      src={cdn(p.image, 240)}
+      srcset={`${cdn(p.image, 240)} 240w, ${cdn(p.image, 480)} 480w`}
+      sizes="(max-width: 560px) 112px, 240px"
+      width="320" height="240" alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" fetchpriority={eager ? 'high' : undefined}
+      data-fallback={cat.id}
+    />
+    {p.imageIsRepresentative && <span class="rep-note" aria-hidden="true">{lang === 'ar' ? 'صورة توضيحية' : 'Representative'}</span>}
+  </div>
+  <div class="card-body">
+    <div class="card-meta">
+      {p.position ? <span class={`chip chip-${p.position}`}>{t(lang, p.position)}</span> : <span class="chip">{lang === 'ar' ? cat.ar : cat.en}</span>}
+      <span class="card-sku">{p.sku}</span>
+    </div>
+    <H class="card-title"><a href={href} data-astro-prefetch>{p.name[lang]}</a></H>
+    <p class="card-fits">{p.fits}</p>
+    {p.oe && p.oe !== p.sku && <p class="card-oe">OE {p.oe}</p>}
+    {withData && <p class="flag" data-year-flag hidden><Icon name="alert" /><span></span></p>}
+    <div class="card-foot">
+      <div class="price"><b>{formatBaisa(p.priceBaisa)}</b><small>{t(lang, 'omr')} · {unit}</small></div>
+      <button class="btn-add" type="button" data-add={p.sku} aria-label={`${t(lang, 'addToCart')}: ${p.name[lang]} ${p.sku}`}><Icon name="plus" /><span class="lbl">{lang === 'ar' ? 'أضف' : 'Add'}</span></button>
+    </div>
+  </div>
+</article>

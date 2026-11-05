@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { lp, t } from '../lib/i18n.ts';
+import type { Lang } from '../lib/catalog.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<Layout lang={lang} path="/order/" noindex title={t(lang, 'orderPlaced')} description={t(lang, 'orderPlaced')}>
+  <div class="wrap confirm" data-order>
+    <div data-order-ok hidden>
+      <div class="tick"><Icon name="check" /></div>
+      <h1 class="display">{t(lang, 'orderPlaced')}</h1>
+      <p style="color:var(--steel);margin-top:6px">{t(lang, 'orderRef')}</p>
+      <div class="ref-box" data-ref></div>
+      <p>{t(lang, 'orderSaved')}</p>
+      <p style="margin-top:14px;font-weight:600">{t(lang, 'orderNext')}</p>
+      <a class="btn btn-wa btn-lg" style="margin-top:16px" data-wa target="_blank" rel="noopener noreferrer"><Icon name="wa" />{t(lang, 'sendOnWhatsapp')}</a>
+      <div class="panel">
+        <div class="lines" data-lines></div>
+        <div class="sums" style="display:grid;gap:8px;margin-top:12px">
+          <div class="sum"><span>{t(lang, 'subtotal')}</span><b data-sub></b></div>
+          <div class="sum"><span>{t(lang, 'delivery')}</span><b data-del></b></div>
+          <div class="sum total"><span>{t(lang, 'total')}</span><b data-total></b></div>
+        </div>
+      </div>
+    </div>
+    <div data-order-none hidden>
+      <h1 class="display">{t(lang, 'orderMissing')}</h1>
+      <a class="btn btn-red" style="margin-top:20px" href={lp(lang, '/shop/')}>{t(lang, 'browse')}</a>
+    </div>
+  </div>
+  <script>
+    import '../scripts/order.ts';
+  </script>
+</Layout>
